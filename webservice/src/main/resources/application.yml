@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: @profile.active@
+server:
+  port: 8787
+  servlet:
+    context-path: /web
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: sincerity_producer
