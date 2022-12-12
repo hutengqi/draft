@@ -17,11 +17,10 @@ import java.util.List;
  */
 public class RunAnything {
 
-    public static void main(String[] args) {
-        Long num1 = Long.valueOf("192383183928778851682383");
-        Long num2 = Long.valueOf("2089984061937879119");
-        System.out.println(num1);
-        System.out.println(num2);
+    private static Boolean even(int num) {
+        if (num % 2 == 0)
+            return Boolean.TRUE;
+        return Boolean.FALSE;
     }
 
     static void generic() {
