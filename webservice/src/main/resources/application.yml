@@ -1,6 +1,18 @@
 spring:
   profiles:
     active: @profile.active@
+  datasource:
+    url: jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: hutengqi1228.?
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 1000
+      connection-test-query: select 1
+      idle-timeout: 60000
+      connection-timeout: 60000
 server:
   port: 8787
   servlet:
