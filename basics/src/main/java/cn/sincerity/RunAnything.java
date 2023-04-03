@@ -1,17 +1,14 @@
 package cn.sincerity;
 
+import cn.sincerity.convert.MapStructConvertor;
+import cn.sincerity.entity.SourceType;
+import cn.sincerity.entity.TargetType;
 import cn.sincerity.exception.CustomException;
-import cn.sincerity.generic.ParentList;
-import cn.sincerity.generic.ParentType;
-import cn.sincerity.generic.SonList;
-import cn.sincerity.generic.SonType;
 import cn.sincerity.reflect.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * RunAnything reflect
@@ -21,37 +18,8 @@ import java.util.stream.Collectors;
  */
 public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
-    public static void main(String[] args) {
-        new Thread(() -> {
-            System.out.println(Thread.currentThread().getId());
-            for (int i = 0; i < 10; i++) {
-                map.put(i, i + 1);
-            }
-        }).start();
 
-//        new Thread(() ->{
-//            System.out.println(Thread.currentThread().getId());
-//            for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-//                System.out.println(entry.getKey());
-//                if (entry.getKey() % 2  == 0) {
-//                    map.remove(entry.getKey());
-//                }
-//            }
-//        }).start();
 
-        new Thread(() ->{
-            System.out.println(Thread.currentThread().getId());
-            Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Integer, Integer> next = iterator.next();
-                System.out.println(next.getKey());
-                if (next.getKey() % 2 == 0) {
-                    System.out.println(next.getKey() + " removed !");
-                    iterator.remove();
-                }
-            }
-        }).start();
-    }
 
     public static void customException() {
         try {
