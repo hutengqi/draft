@@ -1,5 +1,7 @@
 package cn.sincerity.algorithm;
 
+import cn.sincerity.algorithm.model.ListNode;
+
 /**
  * DeleteDuplicates:
  *

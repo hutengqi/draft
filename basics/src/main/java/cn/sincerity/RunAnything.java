@@ -1,8 +1,5 @@
 package cn.sincerity;
 
-import cn.sincerity.convert.MapStructConvertor;
-import cn.sincerity.entity.SourceType;
-import cn.sincerity.entity.TargetType;
 import cn.sincerity.exception.CustomException;
 import cn.sincerity.reflect.*;
 
@@ -19,7 +16,16 @@ import java.util.*;
 public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
 
+    public static void main(String[] args) {
+        Integer num = 3;
+        System.out.println(num);
+        updateNum(num);
+        System.out.println(num);
+    }
 
+    public static void updateNum(Integer num) {
+        num = 7;
+    }
 
     public static void customException() {
         try {

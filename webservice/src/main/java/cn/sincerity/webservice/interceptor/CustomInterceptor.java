@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * CustomInterceptor
+ * CustomInterceptor: 自定义拦截器
  *
  * @author Ht7_Sincerity
  * @date 2023/3/20

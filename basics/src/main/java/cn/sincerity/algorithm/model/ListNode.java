@@ -1,4 +1,4 @@
-package cn.sincerity.algorithm;
+package cn.sincerity.algorithm.model;
 
 /**
  * ListNode: 链表
@@ -7,8 +7,8 @@ package cn.sincerity.algorithm;
  * @date 2023/4/3
  */
 public class ListNode {
-    int val;
-    ListNode next;
+    public int val;
+    public ListNode next;
 
     ListNode() {
     }
