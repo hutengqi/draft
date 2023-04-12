@@ -17,10 +17,8 @@ public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
 
     public static void main(String[] args) {
-        Integer num = 3;
-        System.out.println(num);
-        updateNum(num);
-        System.out.println(num);
+        String code = "010172023021112345678";
+        System.out.println(code.trim().substring(0, code.length() - 16));
     }
 
     public static void updateNum(Integer num) {

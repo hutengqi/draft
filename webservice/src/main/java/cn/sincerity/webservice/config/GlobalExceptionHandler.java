@@ -1,12 +1,12 @@
 package cn.sincerity.webservice.config;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 
 /**
@@ -16,15 +16,32 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * @date 2023/4/10
  */
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        if (ex instanceof MethodArgumentNotValidException) {
-            String message = ((MethodArgumentNotValidException) ex).getMessage();
-            System.out.println(message);
-        }
+    // extends ResponseEntityExceptionHandler
 
-        return super.handleExceptionInternal(ex, body, headers, status, request);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = Exception.class)
+    public String exceptionHandler(Exception e) {
+        return e.getMessage();
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public String hibernateValidHandler(Exception ex) {
+        FieldError fieldError = ((MethodArgumentNotValidException) ex).getFieldError();
+        assert fieldError != null;
+        return fieldError.getField() + ": " + fieldError.getDefaultMessage();
+    }
+
+//    @Override
+//    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//        if (ex instanceof MethodArgumentNotValidException) {
+//            body = ((MethodArgumentNotValidException) ex).getFieldErrors().stream()
+//                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                    .collect(Collectors.joining("; "));
+//
+//        }
+//        return super.handleExceptionInternal(ex, body, headers, status, request);
+//    }
 }
