@@ -3,6 +3,9 @@ package cn.sincerity.webservice.domian;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * Family
@@ -14,8 +17,10 @@ import javax.validation.Valid;
 public class Family {
 
     @Valid
+    @NotNull(message = "cat 不能为空")
     private Cat cat;
 
     @Valid
-    private Dog dog;
+    @NotEmpty(message = "dogs 不能为空")
+    private List<Dog> dogs;
 }
