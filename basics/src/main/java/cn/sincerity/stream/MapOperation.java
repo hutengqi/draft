@@ -3,9 +3,9 @@ package cn.sincerity.stream;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,13 +17,7 @@ import java.util.stream.Collectors;
 public class MapOperation {
 
     public static void main(String[] args) {
-//        List<MultipleFieldType> list = new ArrayList<>(10);
-//        for (int i = 0; i < 10; i++) {
-//            list.add(new MultipleFieldType("first: " + i, "second: " + i, "third: " + i));
-//        }
-//        Map<String, List<MultipleFieldType>> collect = list.stream()
-//                .collect(Collectors.groupingBy(MultipleFieldType::getFirst));
-//        System.out.println(collect);
+        System.out.println(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
     @Data
@@ -35,5 +29,17 @@ public class MapOperation {
         private String second;
 
         private String third;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Before {
+        private Integer sort;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class After {
+        private Integer sort;
     }
 }
