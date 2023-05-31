@@ -5,6 +5,7 @@ import cn.sincerity.reflect.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -17,7 +18,9 @@ public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
 
     public static void main(String[] args) {
-
+        String id = "810000199708081515";
+        System.out.println(id.length());
+        System.out.println(id.substring(6, 14));
     }
 
 

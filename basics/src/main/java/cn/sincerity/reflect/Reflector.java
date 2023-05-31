@@ -1,8 +1,5 @@
 package cn.sincerity.reflect;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 /**
  * Reflector
  *

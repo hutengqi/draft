@@ -21,7 +21,7 @@ import java.time.Duration;
 @Slf4j
 public class SftpPool implements DisposableBean {
 
-    private GenericObjectPool<SftpClient> pool;
+    private final GenericObjectPool<SftpClient> pool;
 
     public SftpPool(ClientProperties clientProperties, PoolProperties poolProperties) {
         this.pool = new GenericObjectPool<>(new PooledClientFactory(clientProperties), createPoolConfig(poolProperties));
@@ -47,6 +47,7 @@ public class SftpPool implements DisposableBean {
      * @param sftpClient sftp 客户端对象
      */
     public void invalidateObject(SftpClient sftpClient) {
+
         try {
             pool.invalidateObject(sftpClient);
         } catch (Exception e) {

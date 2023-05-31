@@ -12,6 +12,7 @@
         <module>basics</module>
         <module>webservice</module>
         <module>infrastructure</module>
+        <module>security</module>
     </modules>
 
     <properties>

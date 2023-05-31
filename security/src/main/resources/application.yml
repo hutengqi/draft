@@ -1,0 +1,8 @@
+server:
+  port: 8007
+
+spring:
+  security:
+    user:
+      name: sincerity
+      password: 123456
