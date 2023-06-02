@@ -3,6 +3,7 @@ server:
 
 spring:
   security:
+    # 定义登录页面的账户密码
     user:
       name: sincerity
       password: 123456
