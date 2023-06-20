@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.controller;
 
+import cn.sincerity.webservice.domian.CustomJsonObject;
 import cn.sincerity.webservice.domian.Query;
 import cn.sincerity.webservice.sftp.SftpTemplate;
 import com.jcraft.jsch.SftpException;
@@ -30,6 +31,12 @@ public class HelloController {
     @GetMapping("query")
     public ResponseEntity<Long> query(@Valid @RequestBody Query query) {
         return ResponseEntity.ok(query.getId());
+    }
+
+    @GetMapping("json")
+    public ResponseEntity<CustomJsonObject> json() {
+        CustomJsonObject json = new CustomJsonObject("json");
+        return ResponseEntity.ok(json);
     }
 
     @GetMapping("sftp")

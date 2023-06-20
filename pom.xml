@@ -13,6 +13,7 @@
         <module>webservice</module>
         <module>infrastructure</module>
         <module>security</module>
+        <module>sentinel</module>
     </modules>
 
     <properties>
@@ -32,6 +33,11 @@
                 <version>${spring.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2021.0.4.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.rocketmq</groupId>

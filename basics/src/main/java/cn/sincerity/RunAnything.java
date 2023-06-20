@@ -2,10 +2,10 @@ package cn.sincerity;
 
 import cn.sincerity.exception.CustomException;
 import cn.sincerity.reflect.*;
+import cn.sincerity.type.Sub;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -17,12 +17,30 @@ import java.util.*;
 public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
 
+
     public static void main(String[] args) {
-        String id = "810000199708081515";
-        System.out.println(id.length());
-        System.out.println(id.substring(6, 14));
+        Caller caller = new Caller();
+        Sub sub = new Sub();
+        caller.run(sub);
     }
 
+
+    static class Caller {
+        void run(Sub sub) {
+            if (sub == null) {
+                throw new IllegalArgumentException("callee can not be null");
+            }
+            sub.caller();
+        }
+    }
+
+    public static void sum(String name, Integer... nums) {
+        int sum = 0;
+        for (Integer num : nums) {
+            sum += num;
+        }
+        System.out.println(name + "的的得分：" + sum);
+    }
 
     public static void updateNum(Integer num) {
         num = 7;

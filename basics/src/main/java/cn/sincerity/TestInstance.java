@@ -1,7 +1,5 @@
 package cn.sincerity;
 
-import lombok.Data;
-
 /**
  * TestInstance
  *
