@@ -45,13 +45,12 @@ public class CaptchaLoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 
         try {
-            Map<String, String> userInfo = new ObjectMapper().readValue(request.getInputStream(), Map.class);
-            String captcha = userInfo.get(getCaptcha());
+            String captcha = request.getParameter(getCaptcha());
             String sessionCaptcha = (String) request.getSession().getAttribute("captcha");
             if(Objects.equals(captcha, sessionCaptcha)){
                 return super.attemptAuthentication(request, response);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
