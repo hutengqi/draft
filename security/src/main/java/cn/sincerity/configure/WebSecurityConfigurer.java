@@ -1,18 +1,20 @@
 package cn.sincerity.configure;
 
-import cn.sincerity.security.CaptchaFilter;
+import cn.sincerity.security.CaptchaLoginFilter;
 import cn.sincerity.security.CustomAuthenticationFailureHandler;
 import cn.sincerity.security.CustomAuthenticationSuccessHandler;
 import cn.sincerity.security.CustomLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * WebSecurityConfigurer: 自定义 Spring Security 配置
@@ -51,7 +53,26 @@ public class WebSecurityConfigurer {
                 .logoutSuccessHandler(new CustomLogoutSuccessHandler())
                 .and()
                 .csrf().disable();
+
+        http.addFilterAt(captchaLoginFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public CaptchaLoginFilter captchaLoginFilter(AuthenticationManager authenticationManager) {
+        CaptchaLoginFilter captchaLoginFilter = new CaptchaLoginFilter(authenticationManager);
+        captchaLoginFilter.setFilterProcessesUrl("/doLogin");
+        captchaLoginFilter.setUsernameParameter("username");
+        captchaLoginFilter.setPasswordParameter("password");
+        captchaLoginFilter.setCaptcha("captcha");
+        captchaLoginFilter.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
+        captchaLoginFilter.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
+        return captchaLoginFilter;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
