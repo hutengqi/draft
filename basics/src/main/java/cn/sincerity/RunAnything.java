@@ -19,9 +19,8 @@ public class RunAnything {
 
 
     public static void main(String[] args) {
-        Caller caller = new Caller();
-        Sub sub = new Sub();
-        caller.run(sub);
+        String str = "830000197807041334";
+
     }
 
 

@@ -1,24 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <title>Spring Security Login </title>
 </head>
 <body>
 <h1>用户登录</h1>
-<form method="post", th:action="@{/doLogin}">
-    <div style="padding: 10px">
+<form method="post" th:action="@{/doLogin}">
+    <div>
         <label>用户名:</label>
-        <input type="text" name="username"/>
+        <label>
+            <input type="text" name="username"/>
+        </label>
     </div>
     <div>
         <label>密码:</label>
-        <input type="password" name="password"/>
+        <label>
+            <input type="password" name="password"/>
+        </label>
     </div>
     <div>
+        <label>验证码:</label>
+        <label>
+            <input type="text" name="captcha"/>
+        </label>
+        <img alt="" th:src="@{/captcha.png}"/>
+    </div>
+    <div style="margin-top: 5pt">
         <input type="submit" value="登录"/>
     </div>
-    <div th:text="${SPRING_SECURITY_LAST_EXCEPTION}"></div>
 </form>
 </body>
 </html>

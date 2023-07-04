@@ -2,8 +2,19 @@ server:
   port: 8007
 
 spring:
-  security:
-    # 定义登录页面的账户密码
-    user:
-      name: sincerity
-      password: 123456
+  datasource:
+    url: jdbc:mysql://localhost:3306/draft?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: hutengqi1228.?
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      # 最小空闲连接数
+      minimum-idle: 10
+      # 连接池最大连接数
+      maximum-pool-size: 1000
+      connection-test-query: select 1
+      # 空闲连接超时时间
+      idle-timeout: 60000
+      # 连接超时时间
+      connection-timeout: 60000
