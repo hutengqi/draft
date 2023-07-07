@@ -4,6 +4,8 @@ import cn.sincerity.webservice.domian.CustomJsonObject;
 import cn.sincerity.webservice.domian.Query;
 import cn.sincerity.webservice.sftp.SftpTemplate;
 import com.jcraft.jsch.SftpException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
  * Create by Ht7_Sincerity on 2021/10/19
  */
 @Slf4j
+@Api
 @RestController
 @RequestMapping("hello")
 public class HelloController {
@@ -23,16 +26,19 @@ public class HelloController {
     @Resource
     private SftpTemplate sftpTemplate;
 
+    @ApiOperation("hello")
     @GetMapping("name/{name}")
     public ResponseEntity<String> hello(@PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 
+    @ApiOperation("query")
     @GetMapping("query")
     public ResponseEntity<Long> query(@Valid @RequestBody Query query) {
         return ResponseEntity.ok(query.getId());
     }
 
+    @ApiOperation("json")
     @GetMapping("json")
     public ResponseEntity<CustomJsonObject> json() {
         CustomJsonObject json = new CustomJsonObject("json");

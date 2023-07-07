@@ -51,7 +51,7 @@ public class CaptchaLoginFilter extends UsernamePasswordAuthenticationFilter {
                 return super.attemptAuthentication(request, response);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new AuthenticationServiceException(e.getMessage());
         }
 
         throw new CaptchaNotMatchException("验证码错误");

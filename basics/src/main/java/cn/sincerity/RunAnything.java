@@ -21,16 +21,14 @@ public class RunAnything {
 
 
     public static void main(String[] args) {
-        String str = "830000200707047393";
-        String dateInId = str.substring(6, 14);
-        String param = "2007-07-04";
-        LocalDate dateInNo = LocalDate.parse(dateInId, DateTimeFormatter.ofPattern("yyyyMMdd"));
-        LocalDate date = LocalDate.parse(param, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        if (!dateInNo.equals(date)) {
-            System.out.println("日期不匹配");
-        }
+        Boolean flag = true;
+        change(flag);
+        System.out.println(flag);
     }
 
+    public static void change(Boolean flag) {
+        flag = false;
+    }
 
     static class Caller {
         void run(Sub sub) {
