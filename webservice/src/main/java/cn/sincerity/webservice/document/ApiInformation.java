@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.document;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -10,14 +11,16 @@ import lombok.experimental.SuperBuilder;
  * @date 2023/7/7
  */
 @Data
-@SuperBuilder
+@NoArgsConstructor
 public class ApiInformation {
 
     private String name;
 
-    private String url;
+    private String path;
 
     private String params;
 
     private String requestMethod;
+
+    private String paramType;
 }
