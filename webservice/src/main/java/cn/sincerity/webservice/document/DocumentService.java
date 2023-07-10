@@ -7,6 +7,7 @@ import cn.sincerity.webservice.document.param.RequestBodyMethodParamResolver;
 import cn.sincerity.webservice.document.param.RequestParamMethodParamResolver;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ObjectUtils;
@@ -42,6 +43,7 @@ public class DocumentService {
         methodParamResolvers.add(new RequestBodyMethodParamResolver());
         methodParamResolvers.add(new RequestParamMethodParamResolver());
         methodParamResolvers.add(new DefaultParamMethodParamResolver());
+        AnnotationAwareOrderComparator.sort(methodParamResolvers);
     }
 
     public void generate() {

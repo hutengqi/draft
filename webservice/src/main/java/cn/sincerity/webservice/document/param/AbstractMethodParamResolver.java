@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.document.param;
 
 import cn.sincerity.webservice.document.ApiField;
+import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public abstract class AbstractMethodParamResolver implements MethodParamResolver {
+public abstract class AbstractMethodParamResolver implements MethodParamResolver, Ordered {
 
     protected boolean supportByAnnotationType(Annotation[][] parameterAnnotations, Class<?> annotationType) {
         for (Annotation[] parameterAnnotation : parameterAnnotations) {

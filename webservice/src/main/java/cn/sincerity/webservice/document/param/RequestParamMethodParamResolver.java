@@ -40,4 +40,8 @@ public class RequestParamMethodParamResolver extends AbstractMethodParamResolver
     public String paramType() {
         return REQUEST_PARAM;
     }
+    @Override
+    public int getOrder() {
+        return 50;
+    }
 }

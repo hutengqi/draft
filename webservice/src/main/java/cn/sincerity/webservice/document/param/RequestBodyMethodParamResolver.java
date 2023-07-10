@@ -41,4 +41,9 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
     public String paramType() {
         return REQUEST_BODY;
     }
+
+    @Override
+    public int getOrder() {
+        return 100;
+    }
 }

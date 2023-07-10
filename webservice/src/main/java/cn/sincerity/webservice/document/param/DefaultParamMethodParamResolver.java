@@ -38,4 +38,9 @@ public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver
     public String paramType() {
         return DEFAULT_PARAM_TYPE;
     }
+
+    @Override
+    public int getOrder() {
+        return 50;
+    }
 }
