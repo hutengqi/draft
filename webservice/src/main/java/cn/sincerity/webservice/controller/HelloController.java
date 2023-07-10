@@ -27,26 +27,26 @@ public class HelloController {
     private SftpTemplate sftpTemplate;
 
     @ApiOperation("hello")
-    @GetMapping("name/{name}")
+    @GetMapping(value = "name/{name}")
     public ResponseEntity<String> hello(@PathVariable String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 
     @ApiOperation("query")
-    @GetMapping("query")
+    @GetMapping(value = "query")
     public ResponseEntity<Long> query(@Valid @RequestBody Query query) {
         return ResponseEntity.ok(query.getId());
     }
 
     @ApiOperation("json")
-    @GetMapping("json")
+    @GetMapping(value = "json")
     public ResponseEntity<CustomJsonObject> json() {
         CustomJsonObject json = new CustomJsonObject("json");
         return ResponseEntity.ok(json);
     }
 
-    @GetMapping("sftp")
-    public ResponseEntity<String> sftp(){
+    @GetMapping(value = "sftp")
+    public ResponseEntity<String> sftp() {
         String url = "https://hq-prd-e-zine.oss-cn-szfinance.aliyuncs.com/agent/uat/product/double/record/sign/e8fd35ea27a04b84a2b5c333f5ccd562.png";
         String path = null;
         try {

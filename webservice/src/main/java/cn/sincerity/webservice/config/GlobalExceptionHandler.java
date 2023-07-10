@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = Exception.class)
     public String exceptionHandler(Exception e) {
+        e.printStackTrace();
         return e.getMessage();
     }
 

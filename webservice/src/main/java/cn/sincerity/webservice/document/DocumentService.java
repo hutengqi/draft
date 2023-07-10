@@ -1,14 +1,19 @@
 package cn.sincerity.webservice.document;
 
+import cn.sincerity.common.util.JsonUtil;
 import cn.sincerity.webservice.controller.HelloController;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +28,11 @@ public class DocumentService {
     public void generate() {
         List<ApiInformation> list = new ArrayList<>();
         Class<HelloController> clz = HelloController.class;
+        RequestMapping clzRequestMapping = AnnotationUtils.findAnnotation(clz, RequestMapping.class);
+        if (clzRequestMapping == null)
+            return;
+        List<String> clzPaths = Arrays.asList(clzRequestMapping.value());
+
         Method[] methods = clz.getMethods();
         for (Method method : methods) {
             ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
@@ -31,14 +41,13 @@ public class DocumentService {
 
             String apiName = apiOperation.value();
 
-            GetMapping annotation = method.getAnnotation(GetMapping.class);
-            String[] value = annotation.value();
+            RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+
+            assert requestMapping != null;
+            String[] value = requestMapping.value();
 
             String params = "";
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            if (parameterTypes != null && parameterTypes[0] != null) {
-                params = parameterTypes[0].toString();
-            }
+            List<Class<?>> paramClzList = Arrays.asList(method.getParameterTypes());
 
             ApiInformation apiInformation = ApiInformation.builder()
                     .name(apiName)
@@ -49,11 +58,4 @@ public class DocumentService {
         }
         list.forEach(e -> System.out.println(e.toString()));
     }
-
-//    public RequestMapping getRequestMappingViaMethod(Method method) {
-//        GetMapping getMapping = method.getAnnotation(GetMapping.class);
-//        if (getMapping != null) {
-//            getMapping.annotationType()
-//        }
-//    }
 }
