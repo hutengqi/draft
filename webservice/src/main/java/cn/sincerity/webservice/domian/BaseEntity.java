@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.domian;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * @date 2023/4/10
  */
 @Data
+@NoArgsConstructor
 public class BaseEntity {
 
     @NotNull(message = "主健不能为空")

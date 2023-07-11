@@ -4,6 +4,7 @@ import cn.sincerity.exception.CustomException;
 import cn.sincerity.reflect.*;
 import cn.sincerity.type.Sub;
 
+import java.beans.Transient;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -21,9 +22,7 @@ public class RunAnything {
 
 
     public static void main(String[] args) {
-        Boolean flag = true;
-        change(flag);
-        System.out.println(flag);
+
     }
 
     public static void change(Boolean flag) {

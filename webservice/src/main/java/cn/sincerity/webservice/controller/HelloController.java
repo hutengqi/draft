@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.controller;
 
 import cn.sincerity.webservice.domian.CustomJsonObject;
+import cn.sincerity.webservice.domian.Family;
 import cn.sincerity.webservice.domian.Query;
 import cn.sincerity.webservice.sftp.SftpTemplate;
 import com.jcraft.jsch.SftpException;
@@ -27,8 +28,8 @@ public class HelloController {
     private SftpTemplate sftpTemplate;
 
     @ApiOperation("hello")
-    @GetMapping(value = "name/{name}")
-    public ResponseEntity<String> hello(@PathVariable String name) {
+    @GetMapping(value = "name")
+    public ResponseEntity<String> hello(@RequestParam("name") String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 
@@ -43,6 +44,12 @@ public class HelloController {
     public ResponseEntity<CustomJsonObject> json() {
         CustomJsonObject json = new CustomJsonObject("json");
         return ResponseEntity.ok(json);
+    }
+
+    @ApiOperation("family")
+    @GetMapping(value = "family")
+    public void family(@RequestBody Family family) {
+
     }
 
     @GetMapping(value = "sftp")

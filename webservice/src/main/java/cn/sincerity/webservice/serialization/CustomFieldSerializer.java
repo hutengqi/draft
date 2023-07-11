@@ -30,7 +30,6 @@ public class CustomFieldSerializer extends StdSerializer<Object> implements Cont
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
         return new CustomFieldSerializer(property.getType().getRawClass());
-
     }
 
     @Override

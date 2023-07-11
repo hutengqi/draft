@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 /**
  * ApiInformation
  *
@@ -23,4 +25,6 @@ public class ApiInformation {
     private String requestMethod;
 
     private String paramType;
+
+    private List<ApiField> apiFields;
 }

@@ -7,22 +7,19 @@ import cn.sincerity.webservice.document.param.RequestBodyMethodParamResolver;
 import cn.sincerity.webservice.document.param.RequestParamMethodParamResolver;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,12 +33,13 @@ public class DocumentService {
 
     private static final PathMatcher pathMatcher = new AntPathMatcher();
 
-    private static final LinkedList<MethodParamResolver> methodParamResolvers = new LinkedList<>();
+    private static final List<MethodParamResolver> methodParamResolvers = new ArrayList<>();
 
     static {
         methodParamResolvers.add(new RequestBodyMethodParamResolver());
         methodParamResolvers.add(new RequestParamMethodParamResolver());
         methodParamResolvers.add(new DefaultParamMethodParamResolver());
+        AnnotationAwareOrderComparator.sort(methodParamResolvers);
     }
 
     public void generate() {
@@ -85,6 +83,8 @@ public class DocumentService {
                 if (methodParamResolver.support(parameterAnnotations)) {
                     apiInformation.setParams(methodParamResolver.resolve4Request(parameters));
                     apiInformation.setParamType(methodParamResolver.paramType());
+                    apiInformation.setApiFields(methodParamResolver.resolve4Document(parameters));
+                    break;
                 }
             }
 
