@@ -28,11 +28,12 @@ public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver
     }
 
     @Override
-    public String resolve4Request(Parameter[] parameters) {
+    public String resolve4Request(Method method) {
+        Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return "";
         }
-        String[] parameterNames = super.getParameterNames(parameters);
+        String[] parameterNames = getParameterNames(method);
         return Arrays.stream(parameterNames)
                 .map(name -> name + "=")
                 .collect(Collectors.joining("&"));
@@ -40,11 +41,12 @@ public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver
     }
 
     @Override
-    public List<ApiField> resolve4Document(Parameter[] parameters) {
+    public List<ApiField> resolve4Document(Method method) {
+        Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return Collections.emptyList();
         }
-        String[] parameterNames = super.getParameterNames(parameters);
+        String[] parameterNames = getParameterNames(method);
         int length = parameters.length;
         List<ApiField> list = new ArrayList<>();
         for (int i = 0; i < length; i++) {
@@ -68,5 +70,15 @@ public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver
     @Override
     public int getOrder() {
         return 100;
+    }
+
+
+    protected String[] getParameterNames(Method method) {
+        LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+        String[] parameterNames = discoverer.getParameterNames(method);
+        if (ObjectUtils.isEmpty(parameterNames)) {
+            return new String[0];
+        }
+        return parameterNames;
     }
 }

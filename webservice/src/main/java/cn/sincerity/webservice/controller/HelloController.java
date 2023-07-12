@@ -7,6 +7,7 @@ import cn.sincerity.webservice.sftp.SftpTemplate;
 import com.jcraft.jsch.SftpException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class HelloController {
 
     @ApiOperation("hello")
     @GetMapping(value = "name")
-    public ResponseEntity<String> hello(@RequestParam("name") String name) {
+    public ResponseEntity<String> hello(@ApiParam("名称") @RequestParam("name") String name) {
         return ResponseEntity.ok("Hello " + name);
     }
 

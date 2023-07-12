@@ -2,6 +2,7 @@ package cn.sincerity.webservice.document.param;
 
 import cn.sincerity.webservice.document.ApiField;
 import com.alibaba.fastjson.JSON;
+import io.swagger.annotations.ApiParam;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,36 +29,49 @@ public class RequestParamMethodParamResolver extends AbstractMethodParamResolver
     }
 
     @Override
-    public String resolve4Request(Parameter[] parameters) {
-        List<String> params = Arrays.stream(parameters)
-                .map(Parameter::getName)
-                .collect(Collectors.toList());
-        return JSON.toJSONString(params);
+    public String resolve4Request(Method method) {
+        Parameter[] parameters = method.getParameters();
+        if (ObjectUtils.isEmpty(parameters)) {
+            return JSON.toJSONString(Collections.emptyList());
+        }
+        List<String> names = new ArrayList<>(parameters.length);
+        for (Parameter parameter : parameters) {
+            RequestParam requestParam = parameter.getAnnotation(RequestParam.class);
+            if (requestParam == null) {
+                continue;
+            }
+            names.add(requestParam.value());
+        }
+        return JSON.toJSONString(names);
     }
 
     @Override
-    public List<ApiField> resolve4Document(Parameter[] parameters) {
+    public List<ApiField> resolve4Document(Method method) {
+        Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return Collections.emptyList();
         }
-        Method method = (Method) parameters[0].getDeclaringExecutable();
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        int length = parameters.length;
-        List<ApiField> list = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            Parameter parameter = parameters[i];
-            Annotation[] parameterAnnotation = parameterAnnotations[i];
-            RequestParam requestParam = (RequestParam)findRequestParam(parameterAnnotation);
-            if (requestParam == null)
-                continue;
 
+        List<ApiField> list = new ArrayList<>(parameters.length);
+        for (Parameter parameter : parameters) {
+            RequestParam requestParam = parameter.getAnnotation(RequestParam.class);
+            if (requestParam == null) {
+                continue;
+            }
+            String desc = null;
+            ApiParam apiParam = parameter.getAnnotation(ApiParam.class);
+            if (apiParam != null) {
+                desc = apiParam.value();
+            }
             ApiField apiField = ApiField.builder()
-                    .name(requestParam.name())
+                    .name(requestParam.value())
+                    .desc(desc)
                     .type(parameter.getType().getSimpleName())
                     .require(requestParam.required())
                     .build();
             list.add(apiField);
         }
+
         return list;
     }
 
@@ -69,14 +83,5 @@ public class RequestParamMethodParamResolver extends AbstractMethodParamResolver
     @Override
     public int getOrder() {
         return 1;
-    }
-
-    private Annotation findRequestParam(Annotation[] parameterAnnotation) {
-        for (Annotation annotation : parameterAnnotation) {
-            if (annotation instanceof RequestParam){
-                return annotation;
-            }
-        }
-        return null;
     }
 }

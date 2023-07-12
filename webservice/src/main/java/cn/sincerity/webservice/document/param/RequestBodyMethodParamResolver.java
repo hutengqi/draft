@@ -13,13 +13,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -35,12 +33,13 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
     }
 
     @Override
-    public String resolve4Request(Parameter[] parameters) {
+    public String resolve4Request(Method method) {
+        Parameter[] parameters = method.getParameters();
         super.checkParamTypesIsEmpty(parameters);
         Parameter parameter = parameters[0];
         try {
             Object o = parameter.getType().newInstance();
-            initCustomTypeField(o);
+            super.initFieldValue(o);
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(o);
         } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
@@ -49,7 +48,8 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
     }
 
     @Override
-    public List<ApiField> resolve4Document(Parameter[] parameters) {
+    public List<ApiField> resolve4Document(Method method) {
+        Parameter[] parameters = method.getParameters();
         super.checkParamTypesIsEmpty(parameters);
         Parameter parameter = parameters[0];
         Class<?> type = parameter.getType();
@@ -66,36 +66,6 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
     @Override
     public int getOrder() {
         return 0;
-    }
-
-    private void initCustomTypeField(Object value) {
-        Class<?> type = value.getClass();
-        Field[] fields = type.getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            Class<?> fieldType = field.getType();
-            if (customType(fieldType)) {
-                try {
-                    Object fieldObject;
-                    if (List.class.isAssignableFrom(fieldType)) {
-                        ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                        Class<?> actualTypeArgument = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-                        fieldObject = actualTypeArgument.newInstance();
-                        field.set(value, Collections.singletonList(fieldObject));
-                    } else if (Map.class.isAssignableFrom(fieldType)) {
-
-                        continue;
-
-                    } else {
-                        fieldObject = fieldType.newInstance();
-                        field.set(value, fieldObject);
-                    }
-                    initCustomTypeField(fieldObject);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
     }
 
     private void generateApiField(Class<?> type, List<ApiField> list) {
@@ -120,7 +90,7 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
 
             list.add(apiField);
 
-            if (customType(fieldType)) {
+            if (!primitiveType(fieldType)) {
                 if (List.class.isAssignableFrom(fieldType)) {
                     ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
                     Class<?> actualTypeArgument = (Class<?>) parameterizedType.getActualTypeArguments()[0];
@@ -130,14 +100,6 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
                 }
             }
         }
-    }
-
-    private boolean customType(Class<?> type) {
-        return !(type.isPrimitive()
-                || CharSequence.class.isAssignableFrom(type)
-                || Number.class.isAssignableFrom(type)
-                || ChronoLocalDate.class.isAssignableFrom(type)
-                || Boolean.class.isAssignableFrom(type));
     }
 
     private boolean require(Field field, boolean require) {

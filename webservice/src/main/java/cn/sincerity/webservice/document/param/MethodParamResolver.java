@@ -3,6 +3,7 @@ package cn.sincerity.webservice.document.param;
 import cn.sincerity.webservice.document.ApiField;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
 
@@ -22,9 +23,11 @@ public interface MethodParamResolver {
 
     boolean support(Annotation[][] parameterAnnotations);
 
-    String resolve4Request(Parameter[] parameters);
+    String resolve4Request(Method method);
 
-    List<ApiField> resolve4Document(Parameter[] parameters);
+    String resolve4Response(Method method);
+
+    List<ApiField> resolve4Document(Method method);
 
     String paramType();
 }

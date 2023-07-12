@@ -23,5 +23,4 @@ public class ApiField {
     private Boolean require;
 
     private String remark;
-
 }

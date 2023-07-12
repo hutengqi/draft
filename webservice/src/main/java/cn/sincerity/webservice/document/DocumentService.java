@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,14 +75,12 @@ public class DocumentService {
             RequestMethod requestMethod = getFirstRequestMethod(methodMapping);
             apiInformation.setRequestMethod(requestMethod.name());
 
-            // 请求参数
-            Parameter[] parameters = method.getParameters();
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
             for (MethodParamResolver methodParamResolver : methodParamResolvers) {
                 if (methodParamResolver.support(parameterAnnotations)) {
-                    apiInformation.setParams(methodParamResolver.resolve4Request(parameters));
+                    apiInformation.setParams(methodParamResolver.resolve4Request(method));
                     apiInformation.setParamType(methodParamResolver.paramType());
-                    apiInformation.setApiFields(methodParamResolver.resolve4Document(parameters));
+                    apiInformation.setApiFields(methodParamResolver.resolve4Document(method));
                     break;
                 }
             }

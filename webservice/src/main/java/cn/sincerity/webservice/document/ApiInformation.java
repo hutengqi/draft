@@ -26,5 +26,7 @@ public class ApiInformation {
 
     private String paramType;
 
+    private String response;
+
     private List<ApiField> apiFields;
 }
