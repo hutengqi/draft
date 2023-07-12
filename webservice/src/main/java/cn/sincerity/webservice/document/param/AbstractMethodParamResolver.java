@@ -69,15 +69,20 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
     }
 
     public Object getDefaultValue(Class<?> clz, Type genericType) {
+
         if (primitiveType(clz)) {
             return getDefaultValue4Cache(clz, () -> null);
-        } else if (List.class.isAssignableFrom(clz)) {
+        }
+
+        if (List.class.isAssignableFrom(clz)) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type argType = parameterizedType.getActualTypeArguments()[0];
             Class<?> argClz = (Class<?>) argType;
             Object element = getDefaultValue4Cache(argClz, () -> getDefaultValue(argClz, argType));
             return Collections.singletonList(element);
-        } else if (Map.class.isAssignableFrom(clz)) {
+        }
+
+        if (Map.class.isAssignableFrom(clz)) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
             Type keyType = actualTypeArguments[0];
@@ -87,31 +92,33 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
             Object key = getDefaultValue4Cache(keyClz, () -> getDefaultValue(keyClz, keyType));
             Object value = getDefaultValue4Cache(valueClz, () -> getDefaultValue(valueClz, valueType));
             return Collections.singletonMap(key, value);
-        } else if (ResponseEntity.class.isAssignableFrom(clz)) {
+        }
+
+        if (ResponseEntity.class.isAssignableFrom(clz)) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type argType = parameterizedType.getActualTypeArguments()[0];
             Class<?> argClz = (Class<?>) argType;
             Object object = getDefaultValue4Cache(argClz, () -> getDefaultValue(argClz, argType));
             return ResponseEntity.ok(object);
-        } else {
-            return getDefaultValue4Cache(clz, () -> {
-                Object obj;
-                try {
-                    obj = clz.newInstance();
-                    Field[] fields = ReflectUtil.getFields(clz);
-                    for (Field field : fields) {
-                        field.setAccessible(true);
-                        Class<?> fieldClz = field.getType();
-                        Type fieldType = field.getGenericType();
-                        Object fieldValue = getDefaultValue4Cache(fieldClz, () -> getDefaultValue(fieldClz, fieldType));
-                        field.set(obj, fieldValue);
-                    }
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                return obj;
-            });
         }
+
+        return getDefaultValue4Cache(clz, () -> {
+            Object obj;
+            try {
+                obj = clz.newInstance();
+                Field[] fields = ReflectUtil.getFields(clz);
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    Class<?> fieldClz = field.getType();
+                    Type fieldType = field.getGenericType();
+                    Object fieldValue = getDefaultValue4Cache(fieldClz, () -> getDefaultValue(fieldClz, fieldType));
+                    field.set(obj, fieldValue);
+                }
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            return obj;
+        });
     }
 
     public Object getDefaultValue4Cache(Class<?> fieldType, Supplier<?> supplier) {
