@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.domian;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ import javax.validation.constraints.NotBlank;
 public class Dog extends BaseEntity {
 
     @NotBlank(message = "狗可以奔跑")
+    @ApiModelProperty("狗的奔跑")
     private String run;
 }

@@ -38,11 +38,10 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
         super.checkParamTypesIsEmpty(parameters);
         Parameter parameter = parameters[0];
         try {
-            Object o = parameter.getType().newInstance();
-            super.initFieldValue(o);
+            Object o = super.getDefaultValue(parameter.getType(), null);
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(o);
-        } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -104,9 +103,9 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
 
     private boolean require(Field field, boolean require) {
         return require
-                || AnnotationUtils.getAnnotation(field, NotNull.class) == null
-                || AnnotationUtils.getAnnotation(field, NotBlank.class) == null
-                || AnnotationUtils.getAnnotation(field, NotEmpty.class) == null;
+                || AnnotationUtils.getAnnotation(field, NotNull.class) != null
+                || AnnotationUtils.getAnnotation(field, NotBlank.class) != null
+                || AnnotationUtils.getAnnotation(field, NotEmpty.class) != null;
     }
 
 }

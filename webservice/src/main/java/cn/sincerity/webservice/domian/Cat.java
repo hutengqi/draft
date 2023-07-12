@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.domian;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,5 +16,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class Cat extends BaseEntity {
 
+    @ApiModelProperty("猫的奔跑")
     private String run;
 }

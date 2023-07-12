@@ -81,6 +81,8 @@ public class DocumentService {
                     apiInformation.setParams(methodParamResolver.resolve4Request(method));
                     apiInformation.setParamType(methodParamResolver.paramType());
                     apiInformation.setApiFields(methodParamResolver.resolve4Document(method));
+                    apiInformation.setResponse(methodParamResolver.resolve4Response(method));
+
                     break;
                 }
             }

@@ -1,15 +1,21 @@
 package cn.sincerity.webservice.document.param;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * AbstractMethodParamResolver
@@ -19,26 +25,30 @@ import java.util.Map;
  */
 public abstract class AbstractMethodParamResolver implements MethodParamResolver, Ordered {
 
+    public static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
+
+    static {
+        DEFAULT_VALUE_MAP.put(String.class, "string");
+        DEFAULT_VALUE_MAP.put(Byte.class, (byte) 0);
+        DEFAULT_VALUE_MAP.put(Short.class, (short) 0);
+        DEFAULT_VALUE_MAP.put(Integer.class, 0);
+        DEFAULT_VALUE_MAP.put(Long.class, 0L);
+        DEFAULT_VALUE_MAP.put(Float.class, 0.00f);
+        DEFAULT_VALUE_MAP.put(Double.class, 0.00d);
+        DEFAULT_VALUE_MAP.put(BigDecimal.class, new BigDecimal("0.00"));
+        DEFAULT_VALUE_MAP.put(Boolean.class, false);
+        DEFAULT_VALUE_MAP.put(LocalDate.class, LocalDate.now());
+        DEFAULT_VALUE_MAP.put(LocalDateTime.class, LocalDateTime.now());
+    }
+
     @Override
-    public String resolve4Response(Method method) {
-        Class<?> returnType = method.getReturnType();
-        if (Void.class.isAssignableFrom(returnType)) {
+    public String resolve4Response(Method method){
+        Class<?> returnClz = method.getReturnType();
+        Type returnType = method.getGenericReturnType();
+        if (Void.class.isAssignableFrom(returnClz)) {
             return null;
         }
-        if (primitiveType(returnType)) {
-            return returnType.getSimpleName();
-        }
-        if (List.class.isAssignableFrom(returnType)) {
-            ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
-            Class<?> elementType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-            initFieldValue(elementType);
-            return JSON.toJSONString(elementType);
-        }
-        // 自定义类型
-        // List
-        // Map
-        // 自定义泛型容器
-        return null;
+        return JSON.toJSONString(getDefaultValue(returnClz, returnType));
     }
 
     protected boolean supportByAnnotationType(Annotation[][] parameterAnnotations, Class<?> annotationType) {
@@ -57,43 +67,64 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
         }
     }
 
+    public Object getDefaultValue(Class<?> type, Type genericType) {
+        if (primitiveType(type)) {
+            return getDefaultValue4Cache(type, () -> null);
+        } else if (List.class.isAssignableFrom(type)) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+            Type argType = parameterizedType.getActualTypeArguments()[0];
+            Class<?> argClz = (Class<?>) argType;
+            Object element = getDefaultValue4Cache(argClz, () -> getDefaultValue(argClz, argType));
+            return Collections.singletonList(element);
+        } else if (Map.class.isAssignableFrom(type)) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            Type keyType = actualTypeArguments[0];
+            Class<?> keyClz = (Class<?>) keyType;
+            Type valueType = actualTypeArguments[1];
+            Class<?> valueClz = (Class<?>) valueType;
+            Object key = getDefaultValue4Cache(keyClz, () -> getDefaultValue(keyClz, keyType));
+            Object value = getDefaultValue4Cache(valueClz, () -> getDefaultValue(valueClz, valueType));
+            return Collections.singletonMap(key, value);
+        } else {
+            return getDefaultValue4Cache(type, () -> {
+                Object obj;
+                try {
+                    obj = type.newInstance();
+                    Field[] fields = ReflectUtil.getFields(type);
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        Class<?> fieldClz = field.getType();
+                        Type fieldType = field.getGenericType();
+                        Object fieldValue = getDefaultValue4Cache(fieldClz, () -> getDefaultValue(fieldClz, fieldType));
+                        field.set(obj, fieldValue);
+                    }
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                return obj;
+            });
+        }
+    }
+
+    public Object getDefaultValue4Cache(Class<?> fieldType, Supplier<?> supplier) {
+        for (Map.Entry<Class<?>, Object> entry : DEFAULT_VALUE_MAP.entrySet()) {
+            if (entry.getKey().isAssignableFrom(fieldType)) {
+                return entry.getValue();
+            }
+        }
+        Object newInstance = supplier.get();
+        if (newInstance != null)
+            DEFAULT_VALUE_MAP.put(fieldType, newInstance);
+
+        return newInstance;
+    }
+
     protected boolean primitiveType(Class<?> type) {
         return type.isPrimitive()
                 || CharSequence.class.isAssignableFrom(type)
                 || Number.class.isAssignableFrom(type)
                 || ChronoLocalDate.class.isAssignableFrom(type)
                 || Boolean.class.isAssignableFrom(type);
-    }
-
-    protected void initFieldValue(Object value) {
-        Class<?> type = value.getClass();
-        Field[] fields = type.getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            Class<?> fieldType = field.getType();
-            if (primitiveType(fieldType)) {
-                // maybe set default value
-            } else {
-                try {
-                    Object fieldObject;
-                    if (List.class.isAssignableFrom(fieldType)) {
-                        ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                        Class<?> actualTypeArgument = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-                        fieldObject = actualTypeArgument.newInstance();
-                        field.set(value, Collections.singletonList(fieldObject));
-                    } else if (Map.class.isAssignableFrom(fieldType)) {
-
-                        continue;
-
-                    } else {
-                        fieldObject = fieldType.newInstance();
-                        field.set(value, fieldObject);
-                    }
-                    initFieldValue(fieldObject);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
     }
 }

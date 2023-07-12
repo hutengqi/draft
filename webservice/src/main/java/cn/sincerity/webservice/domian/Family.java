@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Family
@@ -27,6 +28,9 @@ public class Family {
     @ApiModelProperty("狗")
     @NotEmpty(message = "dogs 不能为空")
     private List<Dog> dogs;
+
+    @ApiModelProperty("用户列表")
+    private Map<String, User> userMap;
 
     public static Family defaultFamily() {
         Family family = new Family();

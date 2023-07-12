@@ -21,8 +21,14 @@ public class RunAnything {
     static Map<Integer, Integer> map = new HashMap<>();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
+
+    }
+
+    public static void setVal(Class<?> type) throws InstantiationException, IllegalAccessException {
+        Object s = type.newInstance();
+        //
     }
 
     public static void change(Boolean flag) {
