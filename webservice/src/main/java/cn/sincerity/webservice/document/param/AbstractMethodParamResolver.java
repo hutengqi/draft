@@ -3,6 +3,7 @@ package cn.sincerity.webservice.document.param;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
@@ -42,7 +43,7 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
     }
 
     @Override
-    public String resolve4Response(Method method){
+    public String resolve4Response(Method method) {
         Class<?> returnClz = method.getReturnType();
         Type returnType = method.getGenericReturnType();
         if (Void.class.isAssignableFrom(returnClz)) {
@@ -67,16 +68,16 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
         }
     }
 
-    public Object getDefaultValue(Class<?> type, Type genericType) {
-        if (primitiveType(type)) {
-            return getDefaultValue4Cache(type, () -> null);
-        } else if (List.class.isAssignableFrom(type)) {
+    public Object getDefaultValue(Class<?> clz, Type genericType) {
+        if (primitiveType(clz)) {
+            return getDefaultValue4Cache(clz, () -> null);
+        } else if (List.class.isAssignableFrom(clz)) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type argType = parameterizedType.getActualTypeArguments()[0];
             Class<?> argClz = (Class<?>) argType;
             Object element = getDefaultValue4Cache(argClz, () -> getDefaultValue(argClz, argType));
             return Collections.singletonList(element);
-        } else if (Map.class.isAssignableFrom(type)) {
+        } else if (Map.class.isAssignableFrom(clz)) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
             Type keyType = actualTypeArguments[0];
@@ -86,12 +87,18 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
             Object key = getDefaultValue4Cache(keyClz, () -> getDefaultValue(keyClz, keyType));
             Object value = getDefaultValue4Cache(valueClz, () -> getDefaultValue(valueClz, valueType));
             return Collections.singletonMap(key, value);
+        } else if (ResponseEntity.class.isAssignableFrom(clz)) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+            Type argType = parameterizedType.getActualTypeArguments()[0];
+            Class<?> argClz = (Class<?>) argType;
+            Object object = getDefaultValue4Cache(argClz, () -> getDefaultValue(argClz, argType));
+            return ResponseEntity.ok(object);
         } else {
-            return getDefaultValue4Cache(type, () -> {
+            return getDefaultValue4Cache(clz, () -> {
                 Object obj;
                 try {
-                    obj = type.newInstance();
-                    Field[] fields = ReflectUtil.getFields(type);
+                    obj = clz.newInstance();
+                    Field[] fields = ReflectUtil.getFields(clz);
                     for (Field field : fields) {
                         field.setAccessible(true);
                         Class<?> fieldClz = field.getType();
