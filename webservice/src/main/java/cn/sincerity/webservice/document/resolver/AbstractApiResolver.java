@@ -1,7 +1,7 @@
 package cn.sincerity.webservice.document.resolver;
 
 import cn.hutool.core.util.ReflectUtil;
-import cn.sincerity.webservice.document.PHandler;
+import cn.sincerity.webservice.document.handlers.PHandler;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
 import org.springframework.http.ResponseEntity;

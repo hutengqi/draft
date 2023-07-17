@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document;
+package cn.sincerity.webservice.document.handlers;
 
 import java.lang.reflect.Type;
 
@@ -12,7 +12,10 @@ public abstract class PHandler {
 
     private PHandler next;
 
-    public Object handle(Class<?> clz, Type genericType){
+
+    // 当前逻辑出来的就是body 再补下属性名的字符串
+    // list  => [1,2,3] 再补下 "filedA" :
+    public String handle(Class<?> clz, Type genericType){
         if (judge(clz)) {
             return doHandle(clz, genericType);
         }
@@ -22,7 +25,7 @@ public abstract class PHandler {
         return null;
     }
 
-    protected abstract Object doHandle(Class<?> clz, Type genericType);
+    protected abstract String doHandle(Class<?> clz, Type genericType);
 
     protected abstract boolean judge(Class<?> clz);
 }
