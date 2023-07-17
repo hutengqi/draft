@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * CustomerJsonObject
  *
@@ -18,4 +20,8 @@ public class CustomJsonObject {
 
     @CustomJson
     private String json;
+
+    private List<List<String>> dyadicArray;
+
+
 }

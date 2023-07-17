@@ -40,7 +40,7 @@ public class RequestBodyApiResolver extends AbstractApiResolver implements ApiRe
         super.checkParamTypesIsEmpty(parameters);
         Parameter parameter = parameters[0];
         try {
-            Object o = super.getDefaultValue(parameter.getType(), null);
+            Object o = HEAD_GENERATOR.getDefaultValue(parameter.getType(), null);
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {

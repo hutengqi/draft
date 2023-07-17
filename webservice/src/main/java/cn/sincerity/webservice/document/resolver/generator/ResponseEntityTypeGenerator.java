@@ -1,24 +1,21 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
-import cn.sincerity.webservice.document.ApiField;
+import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * ListTypeValueGenerator
+ * ResponseEntityTypeValueGenerator
  *
  * @author Ht7_Sincerity
  * @date 2023/7/17
  */
-public class ListTypeValueGenerator extends AbstractTypeValueGenerator {
-
+public class ResponseEntityTypeGenerator extends AbstractTypeGenerator {
 
     @Override
-    boolean support(Class<?> type) {
-        return List.class.isAssignableFrom(type);
+    boolean judge(Class<?> clz) {
+        return ResponseEntity.class.isAssignableFrom(clz);
     }
 
     @Override
@@ -26,12 +23,7 @@ public class ListTypeValueGenerator extends AbstractTypeValueGenerator {
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type argType = parameterizedType.getActualTypeArguments()[0];
         Class<?> argClz = (Class<?>) argType;
-        Object element = getDefaultValue(argClz, type);
-        return Collections.singletonList(element);
-    }
-
-    @Override
-    public List<ApiField> generateFields() {
-        return null;
+        Object object = getDefaultValue(argClz, type);
+        return ResponseEntity.ok(object);
     }
 }

@@ -1,12 +1,10 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ht7_Sincerity
  * @date 2023/7/13
  */
-public abstract class AbstractTypeValueGenerator implements TypeValueGenerator {
+public abstract class AbstractTypeGenerator {
 
     public static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
 
-    public static final List<AbstractTypeValueGenerator> GENERATORS = new LinkedList<>();
+    private AbstractTypeGenerator next;
 
     static {
         DEFAULT_VALUE_MAP.put(String.class, "string");
@@ -36,7 +34,10 @@ public abstract class AbstractTypeValueGenerator implements TypeValueGenerator {
         DEFAULT_VALUE_MAP.put(LocalDateTime.class, LocalDateTime.now());
     }
 
-    @Override
+    public void setNext(AbstractTypeGenerator generator) {
+        this.next = generator;
+    }
+
     public Object getDefaultValue(Class<?> clz, Type type) {
         for (Map.Entry<Class<?>, Object> entry : DEFAULT_VALUE_MAP.entrySet()) {
             if (entry.getKey().isAssignableFrom(clz)) {
@@ -44,19 +45,26 @@ public abstract class AbstractTypeValueGenerator implements TypeValueGenerator {
             }
         }
 
-        Object newInstance = null;
-        for (AbstractTypeValueGenerator generator : GENERATORS) {
-            if (support(clz))
-                newInstance = generator.generateDefaultValue(clz, type);
+        if (judge(clz)) {
+            return generateDefaultValue(clz, type);
         }
 
-        if (newInstance != null)
-            DEFAULT_VALUE_MAP.put(clz, newInstance);
+        if (next != null) {
+            return next.getDefaultValue(clz, type);
+        }
 
-        return newInstance;
+        return null;
     }
 
-    abstract boolean support(Class<?> type);
+    abstract boolean judge(Class<?> clz);
 
     abstract Object generateDefaultValue(Class<?> clz, Type type);
+
+
+    protected Class<?> getClassFromType(Type type) {
+        if (type instanceof ParameterizedType)
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+
+        return (Class<?>) type;
+    }
 }

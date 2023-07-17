@@ -43,7 +43,7 @@ public class HelloController {
     @ApiOperation("json")
     @GetMapping(value = "json")
     public ResponseEntity<CustomJsonObject> json() {
-        CustomJsonObject json = new CustomJsonObject("json");
+        CustomJsonObject json = new CustomJsonObject();
         return ResponseEntity.ok(json);
     }
 
