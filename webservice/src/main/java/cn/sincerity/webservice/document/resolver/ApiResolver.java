@@ -1,19 +1,18 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
 import cn.sincerity.webservice.document.ApiField;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 /**
- * MethodParamResolver: 方法参数解析器
+ * ApiResolver: 参数解析器
  *
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public interface MethodParamResolver {
+public interface ApiResolver {
 
     String REQUEST_PARAM = "form-data";
 
@@ -23,9 +22,9 @@ public interface MethodParamResolver {
 
     boolean support(Annotation[][] parameterAnnotations);
 
-    String resolve4Request(Method method);
+    String resolve2Json4Request(Method method);
 
-    String resolve4Response(Method method);
+    String resolve2Json4Response(Method method);
 
     List<ApiField> resolve4Document(Method method);
 

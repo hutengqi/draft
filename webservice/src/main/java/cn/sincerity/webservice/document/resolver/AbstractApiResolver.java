@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public abstract class AbstractMethodParamResolver implements MethodParamResolver, Ordered {
+public abstract class AbstractApiResolver implements ApiResolver, Ordered {
 
     public static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
 
@@ -43,7 +43,7 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
     }
 
     @Override
-    public String resolve4Response(Method method) {
+    public String resolve2Json4Response(Method method) {
         Class<?> returnClz = method.getReturnType();
         Type returnType = method.getGenericReturnType();
         if (Void.class.isAssignableFrom(returnClz)) {
@@ -68,7 +68,7 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
         }
     }
 
-    public Object getDefaultValue(Class<?> clz, Type genericType) {
+    protected Object getDefaultValue(Class<?> clz, Type genericType) {
 
         if (primitiveType(clz)) {
             return getDefaultValue4Cache(clz, () -> null);

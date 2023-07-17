@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
 import cn.sincerity.webservice.document.ApiField;
 import com.alibaba.fastjson.JSON;
@@ -10,10 +10,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * PathVariableMethodParamResolver
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public class RequestParamMethodParamResolver extends AbstractMethodParamResolver implements MethodParamResolver {
+public class RequestParamApiResolver extends AbstractApiResolver implements ApiResolver {
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -29,7 +27,7 @@ public class RequestParamMethodParamResolver extends AbstractMethodParamResolver
     }
 
     @Override
-    public String resolve4Request(Method method) {
+    public String resolve2Json4Request(Method method) {
         Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return JSON.toJSONString(Collections.emptyList());

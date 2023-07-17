@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document;
+package cn.sincerity.webservice.document.annotation;
 
 import java.lang.annotation.*;
 
