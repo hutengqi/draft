@@ -16,7 +16,7 @@ public abstract class PHandler {
         if (judge(clz)) {
             doHandle(clz, genericType);
         } else if (next != null) {
-            handle(clz, genericType);
+            next.handle(clz, genericType);
         }
     }
 
