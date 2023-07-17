@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.document.param;
 
 import cn.hutool.core.util.ReflectUtil;
+import cn.sincerity.webservice.document.PHandler;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,8 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
             throw new IllegalArgumentException("params must be not empty.");
         }
     }
+
+    private PHandler pHadnler;
 
     public Object getDefaultValue(Class<?> clz, Type genericType) {
 
