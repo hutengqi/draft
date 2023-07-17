@@ -68,12 +68,9 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
             throw new IllegalArgumentException("params must be not empty.");
         }
     }
-
-    protected Object getDefaultValue(Class<?> clz, Type genericType) {
     private PHandler pHadnler;
 
-    public Object getDefaultValue(Class<?> clz, Type genericType) {
-
+    protected Object getDefaultValue(Class<?> clz, Type genericType) {
         if (primitiveType(clz)) {
             return getDefaultValue4Cache(clz, () -> null);
         }
