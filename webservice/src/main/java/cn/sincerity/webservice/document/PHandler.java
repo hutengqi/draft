@@ -12,15 +12,17 @@ public abstract class PHandler {
 
     private PHandler next;
 
-    public void handle(Class<?> clz, Type genericType){
+    public Object handle(Class<?> clz, Type genericType){
         if (judge(clz)) {
-            doHandle(clz, genericType);
-        } else if (next != null) {
-            next.handle(clz, genericType);
+            return doHandle(clz, genericType);
         }
+        if (next != null) {
+            return next.handle(clz, genericType);
+        }
+        return null;
     }
 
-    protected abstract void doHandle(Class<?> clz, Type genericType);
+    protected abstract Object doHandle(Class<?> clz, Type genericType);
 
     protected abstract boolean judge(Class<?> clz);
 }
