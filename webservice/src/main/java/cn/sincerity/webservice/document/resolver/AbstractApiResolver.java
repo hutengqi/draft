@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.sincerity.webservice.document.PHandler;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public abstract class AbstractMethodParamResolver implements MethodParamResolver, Ordered {
+public abstract class AbstractApiResolver implements ApiResolver, Ordered {
 
     public static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
 
@@ -44,7 +44,7 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
     }
 
     @Override
-    public String resolve4Response(Method method) {
+    public String resolve2Json4Response(Method method) {
         Class<?> returnClz = method.getReturnType();
         Type returnType = method.getGenericReturnType();
         if (Void.class.isAssignableFrom(returnClz)) {
@@ -69,6 +69,7 @@ public abstract class AbstractMethodParamResolver implements MethodParamResolver
         }
     }
 
+    protected Object getDefaultValue(Class<?> clz, Type genericType) {
     private PHandler pHadnler;
 
     public Object getDefaultValue(Class<?> clz, Type genericType) {

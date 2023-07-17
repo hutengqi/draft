@@ -1,7 +1,9 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
+import cn.hutool.core.util.ReflectUtil;
+import cn.sincerity.webservice.document.annotation.ApiElement;
 import cn.sincerity.webservice.document.ApiField;
-import cn.sincerity.webservice.document.ApiRemark;
+import cn.sincerity.webservice.document.annotation.ApiRemark;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,14 +28,14 @@ import java.util.List;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver implements MethodParamResolver {
+public class RequestBodyApiResolver extends AbstractApiResolver implements ApiResolver {
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
         return super.supportByAnnotationType(parameterAnnotations, RequestBody.class);
     }
 
     @Override
-    public String resolve4Request(Method method) {
+    public String resolve2Json4Request(Method method) {
         Parameter[] parameters = method.getParameters();
         super.checkParamTypesIsEmpty(parameters);
         Parameter parameter = parameters[0];
@@ -68,7 +70,8 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
     }
 
     private void generateApiField(Class<?> type, List<ApiField> list) {
-        for (Field field : type.getDeclaredFields()) {
+        Field[] fields = ReflectUtil.getFields(type);
+        for (Field field : fields) {
             field.setAccessible(true);
             Class<?> fieldType = field.getType();
             ApiModelProperty apiModelProperty = AnnotationUtils.getAnnotation(field, ApiModelProperty.class);
@@ -89,15 +92,17 @@ public class RequestBodyMethodParamResolver extends AbstractMethodParamResolver 
 
             list.add(apiField);
 
-            if (!primitiveType(fieldType)) {
-                if (List.class.isAssignableFrom(fieldType)) {
-                    ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                    Class<?> actualTypeArgument = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-                    generateApiField(actualTypeArgument, list);
-                } else {
-                    generateApiField(fieldType, list);
-                }
+            if (primitiveType(fieldType)) {
+                continue;
             }
+
+            if (List.class.isAssignableFrom(fieldType)) {
+                ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+                ApiElement annotation = AnnotationUtils.getAnnotation(field, ApiElement.class);
+
+                fieldType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+            }
+            generateApiField(fieldType, list);
         }
     }
 

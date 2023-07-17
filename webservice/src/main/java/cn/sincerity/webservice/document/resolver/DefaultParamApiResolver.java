@@ -1,11 +1,10 @@
-package cn.sincerity.webservice.document.param;
+package cn.sincerity.webservice.document.resolver;
 
 import cn.sincerity.webservice.document.ApiField;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver implements MethodParamResolver {
+public class DefaultParamApiResolver extends AbstractApiResolver implements ApiResolver {
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -28,7 +27,7 @@ public class DefaultParamMethodParamResolver extends AbstractMethodParamResolver
     }
 
     @Override
-    public String resolve4Request(Method method) {
+    public String resolve2Json4Request(Method method) {
         Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return "";

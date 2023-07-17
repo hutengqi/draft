@@ -1,10 +1,10 @@
 package cn.sincerity.webservice.document;
 
 import cn.sincerity.webservice.controller.HelloController;
-import cn.sincerity.webservice.document.param.DefaultParamMethodParamResolver;
-import cn.sincerity.webservice.document.param.MethodParamResolver;
-import cn.sincerity.webservice.document.param.RequestBodyMethodParamResolver;
-import cn.sincerity.webservice.document.param.RequestParamMethodParamResolver;
+import cn.sincerity.webservice.document.resolver.DefaultParamApiResolver;
+import cn.sincerity.webservice.document.resolver.ApiResolver;
+import cn.sincerity.webservice.document.resolver.RequestBodyApiResolver;
+import cn.sincerity.webservice.document.resolver.RequestParamApiResolver;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -32,13 +32,13 @@ public class DocumentService {
 
     private static final PathMatcher pathMatcher = new AntPathMatcher();
 
-    private static final List<MethodParamResolver> methodParamResolvers = new ArrayList<>();
+    private static final List<ApiResolver> API_RESOLVERS = new ArrayList<>();
 
     static {
-        methodParamResolvers.add(new RequestBodyMethodParamResolver());
-        methodParamResolvers.add(new RequestParamMethodParamResolver());
-        methodParamResolvers.add(new DefaultParamMethodParamResolver());
-        AnnotationAwareOrderComparator.sort(methodParamResolvers);
+        API_RESOLVERS.add(new RequestBodyApiResolver());
+        API_RESOLVERS.add(new RequestParamApiResolver());
+        API_RESOLVERS.add(new DefaultParamApiResolver());
+        AnnotationAwareOrderComparator.sort(API_RESOLVERS);
     }
 
     public void generate() {
@@ -76,12 +76,12 @@ public class DocumentService {
             apiInformation.setRequestMethod(requestMethod.name());
 
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-            for (MethodParamResolver methodParamResolver : methodParamResolvers) {
-                if (methodParamResolver.support(parameterAnnotations)) {
-                    apiInformation.setParams(methodParamResolver.resolve4Request(method));
-                    apiInformation.setParamType(methodParamResolver.paramType());
-                    apiInformation.setApiFields(methodParamResolver.resolve4Document(method));
-                    apiInformation.setResponse(methodParamResolver.resolve4Response(method));
+            for (ApiResolver apiResolver : API_RESOLVERS) {
+                if (apiResolver.support(parameterAnnotations)) {
+                    apiInformation.setParams(apiResolver.resolve2Json4Request(method));
+                    apiInformation.setParamType(apiResolver.paramType());
+                    apiInformation.setApiFields(apiResolver.resolve4Document(method));
+                    apiInformation.setResponse(apiResolver.resolve2Json4Response(method));
 
                     break;
                 }
