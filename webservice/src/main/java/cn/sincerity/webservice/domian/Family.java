@@ -1,5 +1,7 @@
 package cn.sincerity.webservice.domian;
 
+import cn.sincerity.webservice.document.TestEnum;
+import cn.sincerity.webservice.document.annotation.ApiElement;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -23,6 +25,9 @@ public class Family {
     @ApiModelProperty("猫")
     @NotNull(message = "cat 不能为空")
     private Cat cat;
+
+    @ApiModelProperty("测试枚举")
+    private TestEnum testEnum;
 
     @Valid
     @ApiModelProperty("狗")

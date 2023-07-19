@@ -1,11 +1,11 @@
 package cn.sincerity.webservice.document;
 
 import cn.sincerity.webservice.controller.HelloController;
-import cn.sincerity.webservice.document.resolver.DefaultParamApiResolver;
 import cn.sincerity.webservice.document.resolver.ApiResolver;
-import cn.sincerity.webservice.document.resolver.RequestBodyApiResolver;
-import cn.sincerity.webservice.document.resolver.RequestParamApiResolver;
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
@@ -28,17 +28,16 @@ import java.util.List;
  * @date 2023/7/7
  */
 @Service
-public class DocumentService {
+public class DocumentService implements InitializingBean {
 
     private static final PathMatcher pathMatcher = new AntPathMatcher();
 
-    private static final List<ApiResolver> API_RESOLVERS = new ArrayList<>();
+    @Autowired
+    private List<ApiResolver> apiResolvers = new ArrayList<>();
 
-    static {
-        API_RESOLVERS.add(new RequestBodyApiResolver());
-        API_RESOLVERS.add(new RequestParamApiResolver());
-        API_RESOLVERS.add(new DefaultParamApiResolver());
-        AnnotationAwareOrderComparator.sort(API_RESOLVERS);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        AnnotationAwareOrderComparator.sort(apiResolvers);
     }
 
     public void generate() {
@@ -76,20 +75,20 @@ public class DocumentService {
             apiInformation.setRequestMethod(requestMethod.name());
 
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-            for (ApiResolver apiResolver : API_RESOLVERS) {
+            for (ApiResolver apiResolver : apiResolvers) {
                 if (apiResolver.support(parameterAnnotations)) {
                     apiInformation.setParams(apiResolver.resolve2Json4Request(method));
                     apiInformation.setParamType(apiResolver.paramType());
-                    apiInformation.setApiFields(apiResolver.resolve4Document(method));
+                    apiInformation.setRequestFields(apiResolver.resolve2Fields4Request(method));
                     apiInformation.setResponse(apiResolver.resolve2Json4Response(method));
-
+                    apiInformation.setResponseFields(apiResolver.resolve2Fields4Response(method));
                     break;
                 }
             }
 
             list.add(apiInformation);
         }
-        list.forEach(e -> System.out.println(e.toString()));
+        System.out.println(JSON.toJSONString(list));
     }
 
     private static String getFirstPath(RequestMapping mapping) {

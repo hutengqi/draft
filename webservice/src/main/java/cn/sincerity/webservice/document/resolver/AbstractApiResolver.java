@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.document.resolver;
 
+import cn.sincerity.webservice.document.ApiField;
 import cn.sincerity.webservice.document.resolver.generator.*;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
@@ -7,7 +8,9 @@ import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.time.chrono.ChronoLocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * AbstractMethodParamResolver
@@ -26,8 +29,10 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
         collectionGenerator.setNext(mapGenerator);
         ResponseEntityTypeGenerator responseGenerator = new ResponseEntityTypeGenerator();
         mapGenerator.setNext(responseGenerator);
+        EnumTypeGenerator enumTypeGenerator = new EnumTypeGenerator();
+        responseGenerator.setNext(enumTypeGenerator);
         CustomTypeGenerator customGenerator = new CustomTypeGenerator();
-        responseGenerator.setNext(customGenerator);
+        enumTypeGenerator.setNext(customGenerator);
     }
 
     @Override
@@ -35,10 +40,22 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
         Class<?> returnClz = method.getReturnType();
         Type returnType = method.getGenericReturnType();
         if (Void.class == returnClz || void.class == returnClz) {
-            return null;
+            return "";
         }
         Object defaultValue = HEAD_GENERATOR.getDefaultValue(returnClz, returnType);
         return JSON.toJSONString(defaultValue);
+    }
+
+    @Override
+    public List<ApiField> resolve2Fields4Response(Method method) {
+        Class<?> returnClz = method.getReturnType();
+        Type returnType = method.getGenericReturnType();
+        if (Void.class == returnClz || void.class == returnClz) {
+            return Collections.emptyList();
+        }
+        List<ApiField> apiFields = new ArrayList<>();
+        HEAD_GENERATOR.fillApiFields(returnClz, returnType, null, apiFields, FieldType.DATA);
+        return apiFields;
     }
 
     protected boolean supportByAnnotationType(Annotation[][] parameterAnnotations, Class<?> annotationType) {
@@ -55,13 +72,5 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
         if (ObjectUtils.isEmpty(parameters)) {
             throw new IllegalArgumentException("params must be not empty.");
         }
-    }
-
-    protected boolean primitiveType(Class<?> type) {
-        return type.isPrimitive()
-                || CharSequence.class.isAssignableFrom(type)
-                || Number.class.isAssignableFrom(type)
-                || ChronoLocalDate.class.isAssignableFrom(type)
-                || Boolean.class.isAssignableFrom(type);
     }
 }

@@ -8,12 +8,10 @@ import java.lang.annotation.*;
  * @author Ht7_Sincerity
  * @date 2023/7/13
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface ApiElement {
 
     String name();
-
-    String remark();
 }

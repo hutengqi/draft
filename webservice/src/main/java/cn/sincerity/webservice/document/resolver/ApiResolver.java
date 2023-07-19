@@ -26,7 +26,9 @@ public interface ApiResolver {
 
     String resolve2Json4Response(Method method);
 
-    List<ApiField> resolve4Document(Method method);
+    List<ApiField> resolve2Fields4Request(Method method);
+
+    List<ApiField> resolve2Fields4Response(Method method);
 
     String paramType();
 }

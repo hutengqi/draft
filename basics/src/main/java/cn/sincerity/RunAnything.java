@@ -22,8 +22,9 @@ public class RunAnything {
 
 
     public static void main(String[] args)  {
-
-
+        List<String> list = new ArrayList<>();
+        Class<? extends List> aClass = list.getClass();
+        System.out.println(aClass.getTypeName());
     }
 
     public static void setVal(Class<?> type) throws InstantiationException, IllegalAccessException {

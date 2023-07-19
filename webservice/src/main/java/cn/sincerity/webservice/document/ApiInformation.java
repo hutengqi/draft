@@ -2,7 +2,6 @@ package cn.sincerity.webservice.document;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -28,5 +27,7 @@ public class ApiInformation {
 
     private String response;
 
-    private List<ApiField> apiFields;
+    private List<ApiField> requestFields;
+
+    private List<ApiField> responseFields;
 }

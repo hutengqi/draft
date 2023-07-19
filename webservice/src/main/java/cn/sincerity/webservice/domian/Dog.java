@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.domian;
 
+import cn.sincerity.webservice.document.annotation.ApiElement;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

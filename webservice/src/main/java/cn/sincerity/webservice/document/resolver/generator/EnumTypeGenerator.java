@@ -9,21 +9,25 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * BasicTypeGenerator
+ * EnumTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/19
  */
-public class BasicTypeGenerator extends AbstractTypeGenerator {
+public class EnumTypeGenerator extends AbstractTypeGenerator{
 
     @Override
     boolean judge(Class<?> clz) {
-        return primitiveType(clz);
+        return clz.isEnum();
     }
 
     @Override
     Object generateDefaultValue(Class<?> clz, Type type) {
-        return null;
+        Object[] enumConstants = clz.getEnumConstants();
+        if (enumConstants == null || enumConstants.length < 1)
+            return null;
+
+        return enumConstants[0];
     }
 
     @Override
@@ -33,19 +37,17 @@ public class BasicTypeGenerator extends AbstractTypeGenerator {
                     .name(fieldType.getName())
                     .type(clz.getSimpleName())
                     .desc(fieldType.getDesc())
-                    .require(true)
                     .build();
             apiFields.add(apiField);
             return;
         }
-
-        ApiField apiField = ApiField.builder()
+        ApiField build = ApiField.builder()
                 .name(field.getName())
                 .type(clz.getSimpleName())
                 .desc(extractValue(field, ApiModelProperty::value))
                 .require(extractValue4Require(field))
                 .remark(extractValue(field, ApiRemark::remark))
                 .build();
-        apiFields.add(apiField);
+        apiFields.add(build);
     }
 }

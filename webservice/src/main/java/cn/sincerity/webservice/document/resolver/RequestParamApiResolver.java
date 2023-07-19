@@ -44,7 +44,7 @@ public class RequestParamApiResolver extends AbstractApiResolver implements ApiR
     }
 
     @Override
-    public List<ApiField> resolve4Document(Method method) {
+    public List<ApiField> resolve2Fields4Request(Method method) {
         Parameter[] parameters = method.getParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return Collections.emptyList();
