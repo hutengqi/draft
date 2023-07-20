@@ -2,9 +2,9 @@
  * package-info
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/19
  */
 @NonNullApi
-package cn.sincerity.webservice.document.resolver;
+package cn.sincerity.webservice.document.registry;
 
 import reactor.util.annotation.NonNullApi;

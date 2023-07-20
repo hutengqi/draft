@@ -19,7 +19,7 @@ import java.util.List;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public class RequestParamApiResolver extends AbstractApiResolver implements ApiResolver {
+public class RequestParamApiResolver extends AbstractApiResolver{
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {

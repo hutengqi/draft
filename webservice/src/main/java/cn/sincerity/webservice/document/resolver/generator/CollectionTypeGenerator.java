@@ -1,12 +1,12 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
 import cn.sincerity.webservice.document.ApiField;
-import cn.sincerity.webservice.document.annotation.ApiRemark;
+import cn.sincerity.webservice.document.model.FieldMeta;
+import cn.sincerity.webservice.document.model.FieldType;
+import cn.sincerity.webservice.document.model.ObjectMeta;
 import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -22,48 +22,44 @@ import java.util.List;
 public class CollectionTypeGenerator extends AbstractTypeGenerator {
 
     @Override
-    boolean judge(Class<?> clz) {
+    public boolean support(Class<?> clz) {
         return Collection.class.isAssignableFrom(clz);
     }
 
     @Override
-    Object generateDefaultValue(Class<?> clz, Type type) {
+    public Object generateDefaultValue(ObjectMeta objectMeta) {
 
-        CollectionArgType collectionArgType = CollectionArgType.from(type);
-        Object element = AbstractApiResolver.HEAD_GENERATOR.getDefaultValue(collectionArgType.getArgClz(), collectionArgType.getArgType());
+        CollectionArgType collectionArgType = CollectionArgType.from(objectMeta.getType());
+        ObjectMeta argMeta = ObjectMeta.of(collectionArgType.getArgClz(), collectionArgType.getArgType());
+        Object element = AbstractApiResolver.getDefaultValue(argMeta);
 
-        if (List.class.isAssignableFrom(clz))
+        if (List.class.isAssignableFrom(objectMeta.getClazz()))
             return Collections.singletonList(element);
 
         return Collections.singleton(element);
     }
 
     @Override
-    public void generateApiFields(Class<?> clz, Type type, Field field, List<ApiField> apiFields, FieldType fieldType) {
-        CollectionArgType collectionArgType = CollectionArgType.from(type);
-        apiFields.add(generateListField(clz, collectionArgType.getArgClz(), field, fieldType));
-        AbstractApiResolver.HEAD_GENERATOR.fillApiFields(collectionArgType.getArgClz(), collectionArgType.getArgType(), null, apiFields, FieldType.ELEMENT);
-    }
+    public void generateApiFields(FieldMeta fieldMeta, List<ApiField> apiFields) {
+        CollectionArgType collectionArgType = CollectionArgType.from(fieldMeta.getType());
 
-    private ApiField generateListField(Class<?> clz, Class<?> argClz, Field field, FieldType fieldType) {
-        if (field == null)
-            return ApiField.builder()
-                    .name(fieldType.getName())
-                    .desc(fieldType.getDesc())
-                    .type(generateTypeName(clz, argClz))
-                    .require(true)
-                    .build();
+        String typeName = generateTypeName(fieldMeta.getClazz(), collectionArgType.getArgClz());
+        fieldMeta.setTypeName(typeName);
 
-        return ApiField.builder()
-                .name(field.getName())
-                .desc(extractValue(field, ApiModelProperty::value))
-                .type(generateTypeName(clz, argClz))
-                .remark(extractValue(field, ApiRemark::remark))
-                .build();
+        ApiField listTypeField = handleCurrentField(fieldMeta);
+        apiFields.add(listTypeField);
+
+        FieldMeta argMeta = FieldMeta.of(collectionArgType.getArgClz(), collectionArgType.getArgType(), null, FieldType.ELEMENT);
+        AbstractApiResolver.fillApiFields(argMeta, apiFields);
     }
 
     private String generateTypeName(Class<?> clz, Class<?> argClz) {
         return clz.getSimpleName() + "<" + argClz.getSimpleName() + ">";
+    }
+
+    @Override
+    public int getOrder() {
+        return 1;
     }
 
     @Data

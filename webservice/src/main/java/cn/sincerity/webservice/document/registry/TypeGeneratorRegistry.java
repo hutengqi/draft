@@ -1,5 +1,8 @@
-package cn.sincerity.webservice.document.resolver;
+package cn.sincerity.webservice.document.registry;
 
+import cn.sincerity.webservice.document.resolver.ApiResolver;
+import cn.sincerity.webservice.document.resolver.generator.AbstractTypeGenerator;
+import com.sun.beans.finder.BeanInfoFinder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,33 +27,35 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * ApiResolverBeanDefinitionRegistry
+ * TypeGeneratorRegistry
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/19
  */
-@Configuration
-public class ApiResolverBeanDefinitionRegistry implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
-    private static final ConfigurationPropertyName PREFIX = ConfigurationPropertyName.of("api.resolver.packages");
+@Configuration
+public class TypeGeneratorRegistry implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
+
+    private static final ConfigurationPropertyName PREFIX = ConfigurationPropertyName.of("api.generator.packages");
 
     private static final Bindable<List<String>> CONTENT = Bindable.listOf(String.class);
 
     private ApplicationContext applicationContext;
 
+
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         GenericApplicationContext context = new GenericApplicationContext();
-        ClassPathBeanDefinitionScanner scanner = new ApiResolverScanner(context);
+        TypeGeneratorScanner scanner = new TypeGeneratorScanner(context);
         Binder binder = Binder.get(applicationContext.getEnvironment());
         List<String> packages = binder.bind(PREFIX, CONTENT).orElseGet(ArrayList::new);
-        packages.add(0, "cn.sincerity.webservice.document.resolver");
-        packages.forEach(packageName -> {
-            Set<BeanDefinition> candidates = scanner.findCandidateComponents(packageName);
+        packages.add("cn.sincerity.webservice.document.resolver.generator");
+        packages.forEach(reference -> {
+            Set<BeanDefinition> candidates = scanner.findCandidateComponents(reference);
             try {
                 for (BeanDefinition candidate : candidates) {
-                    Class<?> clz = Class.forName(candidate.getBeanClassName());
-                    registry.registerBeanDefinition(clz.getName(), BeanDefinitionBuilder.genericBeanDefinition(clz).getBeanDefinition());
+                    Class<?> clazz = Class.forName(candidate.getBeanClassName());
+                    registry.registerBeanDefinition(clazz.getName(), BeanDefinitionBuilder.genericBeanDefinition(clazz).getBeanDefinition());
                 }
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -68,9 +73,9 @@ public class ApiResolverBeanDefinitionRegistry implements BeanDefinitionRegistry
         this.applicationContext = applicationContext;
     }
 
-    static class ApiResolverScanner extends ClassPathBeanDefinitionScanner {
+    static class TypeGeneratorScanner extends ClassPathBeanDefinitionScanner {
 
-        public ApiResolverScanner(BeanDefinitionRegistry registry) {
+        public TypeGeneratorScanner(BeanDefinitionRegistry registry) {
             super(registry, false);
         }
 
@@ -92,7 +97,7 @@ public class ApiResolverBeanDefinitionRegistry implements BeanDefinitionRegistry
                 return false;
             }
             boolean isInterfaceOrAbstract = clz.isInterface() || Modifier.isAbstract(clz.getModifiers());
-            return !isInterfaceOrAbstract && ApiResolver.class.isAssignableFrom(clz);
+            return !isInterfaceOrAbstract && AbstractTypeGenerator.class.isAssignableFrom(clz);
         }
     }
 }

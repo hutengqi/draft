@@ -11,7 +11,13 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface ApiRemark {
+public @interface ApiProperty {
 
-    String remark();
+    String remark() default "";
+
+    Class<?> enumClass() default Object.class;
+
+    String codeMethod() default "name";
+
+    String descMethod() default "";
 }

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Ht7_Sincerity
  * @date 2023/7/10
  */
-public class DefaultParamApiResolver extends AbstractApiResolver implements ApiResolver {
+public class DefaultParamApiResolver extends AbstractApiResolver{
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -61,6 +61,15 @@ public class DefaultParamApiResolver extends AbstractApiResolver implements ApiR
         return list;
     }
 
+    protected String[] getParameterNames(Method method) {
+        LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+        String[] parameterNames = discoverer.getParameterNames(method);
+        if (ObjectUtils.isEmpty(parameterNames)) {
+            return new String[0];
+        }
+        return parameterNames;
+    }
+
     @Override
     public String paramType() {
         return DEFAULT_PARAM_TYPE;
@@ -69,15 +78,5 @@ public class DefaultParamApiResolver extends AbstractApiResolver implements ApiR
     @Override
     public int getOrder() {
         return 100;
-    }
-
-
-    protected String[] getParameterNames(Method method) {
-        LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
-        String[] parameterNames = discoverer.getParameterNames(method);
-        if (ObjectUtils.isEmpty(parameterNames)) {
-            return new String[0];
-        }
-        return parameterNames;
     }
 }

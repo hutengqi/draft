@@ -1,4 +1,4 @@
-package cn.sincerity.webservice.document.resolver.generator;
+package cn.sincerity.webservice.document.model;
 
 /**
  * FieldType

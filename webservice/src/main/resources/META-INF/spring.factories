@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.sincerity.webservice.document.resolver.ApiResolverBeanDefinitionRegistry
+cn.sincerity.webservice.document.registry.ApiResolverRegistry

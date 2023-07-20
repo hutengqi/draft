@@ -2,10 +2,15 @@ package cn.sincerity.webservice.document.resolver.generator;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.annotation.ApiProperty;
+import cn.sincerity.webservice.document.model.FieldMeta;
+import cn.sincerity.webservice.document.model.FieldType;
+import cn.sincerity.webservice.document.model.ObjectMeta;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.LambdaMeta;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import javax.validation.constraints.NotBlank;
@@ -30,11 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ht7_Sincerity
  * @date 2023/7/13
  */
-public abstract class AbstractTypeGenerator {
+public abstract class AbstractTypeGenerator implements Ordered {
 
-    public static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
-
-    private AbstractTypeGenerator next;
+    protected static final Map<Class<?>, Object> DEFAULT_VALUE_MAP = new ConcurrentHashMap<>();
 
     static {
         DEFAULT_VALUE_MAP.put(String.class, "string");
@@ -50,45 +53,58 @@ public abstract class AbstractTypeGenerator {
         DEFAULT_VALUE_MAP.put(LocalDateTime.class, LocalDateTime.now());
     }
 
-    public void setNext(AbstractTypeGenerator generator) {
-        this.next = generator;
+    public static Object getDefaultValueFormLocalCache(Class<?> clazz){
+        return DEFAULT_VALUE_MAP.get(clazz);
     }
 
-    public Object getDefaultValue(Class<?> clz, Type type) {
-        for (Map.Entry<Class<?>, Object> entry : DEFAULT_VALUE_MAP.entrySet()) {
-            if (entry.getKey().isAssignableFrom(clz)) {
-                return entry.getValue();
-            }
+    public abstract boolean support(Class<?> clz);
+
+    public abstract Object generateDefaultValue(ObjectMeta objectMeta);
+
+    public abstract void generateApiFields(FieldMeta fieldMeta, List<ApiField> apiFields);
+
+    protected ApiField handleCurrentField(FieldMeta fieldMeta) {
+        Field field = fieldMeta.getField();
+        String typeName = fieldMeta.getTypeName();
+
+        if (field == null) {
+            FieldType fieldType = fieldMeta.getFieldType();
+            return ApiField.builder()
+                    .name(fieldType.getName())
+                    .desc(fieldType.getDesc())
+                    .type(typeName)
+                    .require(true)
+                    .build();
         }
 
-        if (judge(clz)) {
-            return generateDefaultValue(clz, type);
-        }
-
-        if (next != null) {
-            return next.getDefaultValue(clz, type);
-        }
-
-        return null;
+        return ApiField.builder()
+                .name(field.getName())
+                .type(typeName)
+                .desc(extractValue(field, ApiModelProperty::value))
+                .remark(extractValue(field, ApiProperty::remark))
+                .require(extractValue4Require(field))
+                .build();
     }
 
-    public void fillApiFields(Class<?> clz, Type type, Field field, List<ApiField> apiFields, FieldType fieldType) {
-        if (judge(clz)) {
-            generateApiFields(clz, type, field, apiFields, fieldType);
+    private void findEnum(FieldMeta fieldMeta) {
+        Field field = fieldMeta.getField();
+        if (field == null)
             return;
-        }
 
-        if (next != null) {
-            next.fillApiFields(clz, type, field, apiFields,fieldType);
+        Class<?> clazz = fieldMeta.getClazz();
+        if (!clazz.isEnum()) {
+            Class<?> enumClass = extractValue(field, ApiProperty::enumClass);
+            if (enumClass != null && enumClass.isEnum())
+                clazz = enumClass;
+        }
+        if (!clazz.isEnum())
+            return;
+
+
+        for (Object enumConstant : clazz.getEnumConstants()) {
+
         }
     }
-
-
-    abstract boolean judge(Class<?> clz);
-
-    abstract Object generateDefaultValue(Class<?> clz, Type type);
-
-    public abstract void generateApiFields(Class<?> clz, Type type, Field field, List<ApiField> apiFields, FieldType fieldType);
 
     protected static Class<?> getClassFromType(Type type) {
         if (type instanceof ParameterizedType)
@@ -96,7 +112,6 @@ public abstract class AbstractTypeGenerator {
 
         return (Class<?>) type;
     }
-
 
     @SuppressWarnings("unchecked")
     public static <A extends Annotation, R> R extractValue(AnnotatedElement annotatedElement, SFunction<A, R> sFunction) {

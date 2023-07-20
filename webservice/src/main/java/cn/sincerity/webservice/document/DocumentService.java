@@ -1,7 +1,9 @@
 package cn.sincerity.webservice.document;
 
 import cn.sincerity.webservice.controller.HelloController;
+import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
 import cn.sincerity.webservice.document.resolver.ApiResolver;
+import cn.sincerity.webservice.document.resolver.generator.AbstractTypeGenerator;
 import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,11 +35,16 @@ public class DocumentService implements InitializingBean {
     private static final PathMatcher pathMatcher = new AntPathMatcher();
 
     @Autowired
-    private List<ApiResolver> apiResolvers = new ArrayList<>();
+    private List<ApiResolver> apiResolvers;
+
+    @Autowired
+    private List<AbstractTypeGenerator> generators;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         AnnotationAwareOrderComparator.sort(apiResolvers);
+        AnnotationAwareOrderComparator.sort(generators);
+        AbstractApiResolver.setGenerators(generators);
     }
 
     public void generate() {

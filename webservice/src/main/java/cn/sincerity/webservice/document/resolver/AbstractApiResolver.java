@@ -1,6 +1,10 @@
 package cn.sincerity.webservice.document.resolver;
 
+import cn.sincerity.webservice.document.ApiEnum;
 import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.FieldMeta;
+import cn.sincerity.webservice.document.model.FieldType;
+import cn.sincerity.webservice.document.model.ObjectMeta;
 import cn.sincerity.webservice.document.resolver.generator.*;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
@@ -20,42 +24,66 @@ import java.util.List;
  */
 public abstract class AbstractApiResolver implements ApiResolver, Ordered {
 
-    public static final AbstractTypeGenerator HEAD_GENERATOR = new BasicTypeGenerator();
+    private static final List<AbstractTypeGenerator> generators = new ArrayList<>();
 
-    static {
-        CollectionTypeGenerator collectionGenerator = new CollectionTypeGenerator();
-        HEAD_GENERATOR.setNext(collectionGenerator);
-        MapTypeGenerator mapGenerator = new MapTypeGenerator();
-        collectionGenerator.setNext(mapGenerator);
-        ResponseEntityTypeGenerator responseGenerator = new ResponseEntityTypeGenerator();
-        mapGenerator.setNext(responseGenerator);
-        EnumTypeGenerator enumTypeGenerator = new EnumTypeGenerator();
-        responseGenerator.setNext(enumTypeGenerator);
-        CustomTypeGenerator customGenerator = new CustomTypeGenerator();
-        enumTypeGenerator.setNext(customGenerator);
+    public static final List<ApiEnum> API_ENUMS = new ArrayList<>();
+
+    public static void setGenerators(List<AbstractTypeGenerator> generators) {
+        AbstractApiResolver.generators.addAll(generators);
     }
 
     @Override
     public String resolve2Json4Response(Method method) {
         Class<?> returnClz = method.getReturnType();
-        Type returnType = method.getGenericReturnType();
         if (Void.class == returnClz || void.class == returnClz) {
             return "";
         }
-        Object defaultValue = HEAD_GENERATOR.getDefaultValue(returnClz, returnType);
+
+        Type returnType = method.getGenericReturnType();
+        ObjectMeta objectMeta = ObjectMeta.of(returnClz, returnType);
+        Object defaultValue = getDefaultValue(objectMeta);
+
         return JSON.toJSONString(defaultValue);
+    }
+
+    public static Object getDefaultValue(ObjectMeta objectMeta) {
+        Class<?> clazz = objectMeta.getClazz();
+        Object cache = AbstractTypeGenerator.getDefaultValueFormLocalCache(clazz);
+        if (cache != null)
+            return cache;
+
+        for (AbstractTypeGenerator generator : generators) {
+            if (generator.support(clazz))
+                return generator.generateDefaultValue(objectMeta);
+        }
+
+        return null;
     }
 
     @Override
     public List<ApiField> resolve2Fields4Response(Method method) {
         Class<?> returnClz = method.getReturnType();
-        Type returnType = method.getGenericReturnType();
+
         if (Void.class == returnClz || void.class == returnClz) {
             return Collections.emptyList();
         }
+
+        Type returnType = method.getGenericReturnType();
         List<ApiField> apiFields = new ArrayList<>();
-        HEAD_GENERATOR.fillApiFields(returnClz, returnType, null, apiFields, FieldType.DATA);
+
+        FieldMeta fieldMeta = FieldMeta.of(returnClz, returnType, null, FieldType.DATA);
+        fillApiFields(fieldMeta, apiFields);
+
         return apiFields;
+    }
+
+    public static void fillApiFields(FieldMeta fieldMeta, List<ApiField> apiFields) {
+        for (AbstractTypeGenerator generator : generators) {
+            if (generator.support(fieldMeta.getClazz())) {
+                generator.generateApiFields(fieldMeta, apiFields);
+                return;
+            }
+        }
     }
 
     protected boolean supportByAnnotationType(Annotation[][] parameterAnnotations, Class<?> annotationType) {

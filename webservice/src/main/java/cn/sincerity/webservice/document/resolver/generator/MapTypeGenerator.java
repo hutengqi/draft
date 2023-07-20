@@ -1,18 +1,18 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
 import cn.sincerity.webservice.document.ApiField;
-import cn.sincerity.webservice.document.annotation.ApiRemark;
-import io.swagger.annotations.ApiModelProperty;
+import cn.sincerity.webservice.document.model.FieldMeta;
+import cn.sincerity.webservice.document.model.FieldType;
+import cn.sincerity.webservice.document.model.ObjectMeta;
+import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
 import lombok.Data;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static cn.sincerity.webservice.document.resolver.AbstractApiResolver.HEAD_GENERATOR;
 
 /**
  * MapTypeValueGenerator
@@ -24,46 +24,47 @@ public class MapTypeGenerator extends AbstractTypeGenerator {
 
 
     @Override
-    boolean judge(Class<?> clz) {
+    public boolean support(Class<?> clz) {
         return Map.class.isAssignableFrom(clz);
     }
 
     @Override
-    Object generateDefaultValue(Class<?> clz, Type type) {
-        MapArgType mapArgType = MapArgType.from(type);
-        Object key = HEAD_GENERATOR.getDefaultValue(mapArgType.getKeyClz(), mapArgType.getKeyType());
-        Object value = HEAD_GENERATOR.getDefaultValue(mapArgType.getValueClz(), mapArgType.getValueType());
+    public Object generateDefaultValue(ObjectMeta objectMeta) {
+        MapArgType mapArgType = MapArgType.from(objectMeta.getType());
+
+        ObjectMeta keyMeta = ObjectMeta.of(mapArgType.getKeyClz(), mapArgType.getKeyType());
+        Object key = AbstractApiResolver.getDefaultValue(keyMeta);
+
+        ObjectMeta valueMeta = ObjectMeta.of(mapArgType.getValueClz(), mapArgType.getValueType());
+        Object value = AbstractApiResolver.getDefaultValue(valueMeta);
+
         return Collections.singletonMap(key, value);
     }
 
     @Override
-    public void generateApiFields(Class<?> clz, Type type, Field field, List<ApiField> apiFields, FieldType fieldType) {
-        MapArgType mapArgType = MapArgType.from(type);
-        apiFields.add(generateMapField(clz, mapArgType, field, fieldType));
-        HEAD_GENERATOR.fillApiFields(mapArgType.getKeyClz(), mapArgType.getKeyType(), null, apiFields, FieldType.MAP_KEY);
-        HEAD_GENERATOR.fillApiFields(mapArgType.getValueClz(), mapArgType.getValueType(), null, apiFields, FieldType.MAP_VALUE);
-    }
+    public void generateApiFields(FieldMeta fieldMeta, List<ApiField> apiFields) {
+        MapArgType mapArgType = MapArgType.from(fieldMeta.getType());
 
-    private ApiField generateMapField(Class<?> clz, MapArgType mapArgType, Field field,FieldType fieldType) {
-        if (field == null)
-            return ApiField.builder()
-                    .name(fieldType.getName())
-                    .type(generateMapTypeName(clz, mapArgType))
-                    .desc(fieldType.getDesc())
-                    .require(false)
-                    .build();
+        String typeName = generateMapTypeName(fieldMeta.getClazz(), mapArgType);
+        fieldMeta.setTypeName(typeName);
 
-        return ApiField.builder()
-                .name(field.getName())
-                .type(generateMapTypeName(clz, mapArgType))
-                .desc(extractValue(field, ApiModelProperty::value))
-                .require(extractValue4Require(field))
-                .remark(extractValue(field, ApiRemark::remark))
-                .build();
+        ApiField mapTypeField = handleCurrentField(fieldMeta);
+        apiFields.add(mapTypeField);
+
+        FieldMeta keyMeta = FieldMeta.of(mapArgType.getKeyClz(), mapArgType.getKeyType(), null, FieldType.MAP_KEY);
+        AbstractApiResolver.fillApiFields(keyMeta, apiFields);
+
+        FieldMeta valueMeta = FieldMeta.of(mapArgType.getValueClz(), mapArgType.getValueType(), null, FieldType.MAP_VALUE);
+        AbstractApiResolver.fillApiFields(valueMeta, apiFields);
     }
 
     public String generateMapTypeName(Class<?> clz, MapArgType mapArgType) {
         return clz.getSimpleName() + "<" + mapArgType.getKeyClz().getSimpleName() + "," + mapArgType.getValueClz().getSimpleName() + ">";
+    }
+
+    @Override
+    public int getOrder() {
+        return 2;
     }
 
     @Data
