@@ -24,11 +24,6 @@ class WebServiceApplicationTests {
 
     @Test
     void annotation(){
-        Class<HelloController> helloControllerClass = HelloController.class;
-        Method[] methods = ReflectUtil.getMethods(helloControllerClass);
-        for (Method method : methods) {
-            System.out.println(AbstractTypeGenerator.extractValue(method, ApiOperation::value));
-        }
 
     }
 }

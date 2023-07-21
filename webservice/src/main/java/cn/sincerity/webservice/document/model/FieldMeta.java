@@ -7,14 +7,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 /**
- * FieldMeta
+ * FieldMeta 字段元素的信息
  *
  * @author Ht7_Sincerity
- * @date 2023/7/19
+ * @date 2023/7/21
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FieldMeta extends ObjectMeta {
+public class FieldMeta extends ObjectMeta{
 
     private Field field;
 

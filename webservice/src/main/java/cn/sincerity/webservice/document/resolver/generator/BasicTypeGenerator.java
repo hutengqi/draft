@@ -1,18 +1,21 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
-import cn.sincerity.webservice.document.ApiField;
+
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.ObjectMeta;
 
+import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 
 /**
  * BasicTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/21
  */
-public class BasicTypeGenerator extends AbstractTypeGenerator {
+public class BasicTypeGenerator extends AbstractTypeGenerator{
+
 
     @Override
     public boolean support(Class<?> clz) {
@@ -33,5 +36,13 @@ public class BasicTypeGenerator extends AbstractTypeGenerator {
     @Override
     public int getOrder() {
         return Integer.MIN_VALUE;
+    }
+
+    private boolean primitiveType(Class<?> type) {
+        return type.isPrimitive()
+                || CharSequence.class.isAssignableFrom(type)
+                || Number.class.isAssignableFrom(type)
+                || ChronoLocalDate.class.isAssignableFrom(type)
+                || Boolean.class.isAssignableFrom(type);
     }
 }

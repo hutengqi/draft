@@ -4,9 +4,10 @@ package cn.sincerity.webservice.document.model;
  * FieldType
  *
  * @author Ht7_Sincerity
- * @date 2023/7/18
+ * @date 2023/7/21
  */
 public enum FieldType {
+
 
     PARAM("param", "请求参数"),
     DATA("data", "返回值"),

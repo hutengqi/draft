@@ -1,10 +1,10 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
 import cn.hutool.core.util.ReflectUtil;
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.ObjectMeta;
-import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
+import cn.sincerity.webservice.document.resolver.AbstractMethodResolver;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -12,12 +12,12 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * CustomTypeValueGenerator
+ * CustomTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/21
  */
-public class CustomTypeGenerator extends AbstractTypeGenerator {
+public class CustomTypeGenerator extends AbstractTypeGenerator{
 
     @Override
     public boolean support(Class<?> clz) {
@@ -34,7 +34,7 @@ public class CustomTypeGenerator extends AbstractTypeGenerator {
             for (Field field : fields) {
                 field.setAccessible(true);
                 ObjectMeta fieldObjectMeta = ObjectMeta.of(field.getType(), field.getGenericType());
-                Object fieldValue = AbstractApiResolver.getDefaultValue(fieldObjectMeta);
+                Object fieldValue = AbstractMethodResolver.getDefaultValue(fieldObjectMeta);
                 field.set(obj, fieldValue);
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -55,7 +55,7 @@ public class CustomTypeGenerator extends AbstractTypeGenerator {
                 continue;
 
             FieldMeta subFieldMeta = FieldMeta.of(f.getType(), f.getGenericType(), f, null);
-            AbstractApiResolver.fillApiFields(subFieldMeta, apiFields);
+            AbstractMethodResolver.fillApiFields(subFieldMeta, apiFields);
         }
     }
 

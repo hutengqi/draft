@@ -1,18 +1,20 @@
 package cn.sincerity.webservice.document.resolver;
 
-import cn.sincerity.webservice.document.ApiField;
+
+import cn.sincerity.webservice.document.model.ApiField;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * ApiResolver: 参数解析器
+ * ApiResolver: API 方法解析器定义
  *
  * @author Ht7_Sincerity
- * @date 2023/7/10
+ * @date 2023/7/21
  */
-public interface ApiResolver {
+
+public interface MethodResolver {
 
     String REQUEST_PARAM = "form-data";
 
@@ -20,7 +22,7 @@ public interface ApiResolver {
 
     String DEFAULT_PARAM_TYPE = "url";
 
-    boolean support(Annotation[][] parameterAnnotations);
+    boolean support(Annotation[][] annotations);
 
     String resolve2Json4Request(Method method);
 

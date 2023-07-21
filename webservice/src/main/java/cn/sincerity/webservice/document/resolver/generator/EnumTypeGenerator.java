@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
-import cn.sincerity.webservice.document.ApiField;
+
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.ObjectMeta;
 
@@ -10,9 +11,9 @@ import java.util.List;
  * EnumTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/19
+ * @date 2023/7/21
  */
-public class EnumTypeGenerator extends AbstractTypeGenerator {
+public class EnumTypeGenerator extends AbstractTypeGenerator  {
 
     @Override
     public boolean support(Class<?> clz) {

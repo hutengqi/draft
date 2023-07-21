@@ -1,6 +1,7 @@
 package cn.sincerity.webservice.document.resolver;
 
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
+import io.swagger.annotations.ApiParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.util.ObjectUtils;
 
@@ -13,13 +14,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cn.sincerity.webservice.document.ApiDocUtils.extractValue;
+
+
 /**
- * DefaultParamMethodParamResolver
+ * DefaultParamMethodResolver: 默认地址参数类型的解析器
  *
  * @author Ht7_Sincerity
- * @date 2023/7/10
+ * @date 2023/7/21
  */
-public class DefaultParamApiResolver extends AbstractApiResolver{
+public class DefaultParamMethodResolver extends AbstractMethodResolver {
+
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -32,6 +37,7 @@ public class DefaultParamApiResolver extends AbstractApiResolver{
         if (ObjectUtils.isEmpty(parameters)) {
             return "";
         }
+
         String[] parameterNames = getParameterNames(method);
         return Arrays.stream(parameterNames)
                 .map(name -> name + "=")
@@ -42,31 +48,42 @@ public class DefaultParamApiResolver extends AbstractApiResolver{
     @Override
     public List<ApiField> resolve2Fields4Request(Method method) {
         Parameter[] parameters = method.getParameters();
+
         if (ObjectUtils.isEmpty(parameters)) {
             return Collections.emptyList();
         }
-        String[] parameterNames = getParameterNames(method);
+
         int length = parameters.length;
         List<ApiField> list = new ArrayList<>();
+        String[] parameterNames = getParameterNames(method);
+
         for (int i = 0; i < length; i++) {
+
             String parameterName = parameterNames[i];
             Parameter parameter = parameters[i];
-            ApiField apiField = ApiField.builder()
-                    .name(parameterName)
-                    .type(parameter.getType().getSimpleName())
-                    .require(false)
-                    .build();
+
+            ApiField apiField = ApiField.of(
+                    parameterName,
+                    extractValue(parameter, ApiParam::value),
+                    parameter.getType().getSimpleName(),
+                    false,
+                    ""
+            );
+
             list.add(apiField);
         }
+
         return list;
     }
 
     protected String[] getParameterNames(Method method) {
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
         String[] parameterNames = discoverer.getParameterNames(method);
+
         if (ObjectUtils.isEmpty(parameterNames)) {
             return new String[0];
         }
+
         return parameterNames;
     }
 

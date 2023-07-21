@@ -1,10 +1,10 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.FieldType;
 import cn.sincerity.webservice.document.model.ObjectMeta;
-import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
+import cn.sincerity.webservice.document.resolver.AbstractMethodResolver;
 import lombok.Data;
 
 import java.lang.reflect.ParameterizedType;
@@ -13,15 +13,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
 /**
- * MapTypeValueGenerator
+ * MapTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/21
  */
-public class MapTypeGenerator extends AbstractTypeGenerator {
-
+public class MapTypeGenerator extends AbstractTypeGenerator{
 
     @Override
     public boolean support(Class<?> clz) {
@@ -33,10 +31,10 @@ public class MapTypeGenerator extends AbstractTypeGenerator {
         MapArgType mapArgType = MapArgType.from(objectMeta.getType());
 
         ObjectMeta keyMeta = ObjectMeta.of(mapArgType.getKeyClz(), mapArgType.getKeyType());
-        Object key = AbstractApiResolver.getDefaultValue(keyMeta);
+        Object key = AbstractMethodResolver.getDefaultValue(keyMeta);
 
         ObjectMeta valueMeta = ObjectMeta.of(mapArgType.getValueClz(), mapArgType.getValueType());
-        Object value = AbstractApiResolver.getDefaultValue(valueMeta);
+        Object value = AbstractMethodResolver.getDefaultValue(valueMeta);
 
         return Collections.singletonMap(key, value);
     }
@@ -52,10 +50,10 @@ public class MapTypeGenerator extends AbstractTypeGenerator {
         apiFields.add(mapTypeField);
 
         FieldMeta keyMeta = FieldMeta.of(mapArgType.getKeyClz(), mapArgType.getKeyType(), null, FieldType.MAP_KEY);
-        AbstractApiResolver.fillApiFields(keyMeta, apiFields);
+        AbstractMethodResolver.fillApiFields(keyMeta, apiFields);
 
         FieldMeta valueMeta = FieldMeta.of(mapArgType.getValueClz(), mapArgType.getValueType(), null, FieldType.MAP_VALUE);
-        AbstractApiResolver.fillApiFields(valueMeta, apiFields);
+        AbstractMethodResolver.fillApiFields(valueMeta, apiFields);
     }
 
     public String generateMapTypeName(Class<?> clz, MapArgType mapArgType) {

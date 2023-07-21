@@ -1,35 +1,35 @@
 package cn.sincerity.webservice.document.resolver;
 
-import cn.sincerity.webservice.document.ApiEnum;
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.FieldType;
 import cn.sincerity.webservice.document.model.ObjectMeta;
-import cn.sincerity.webservice.document.resolver.generator.*;
+import cn.sincerity.webservice.document.resolver.generator.AbstractTypeGenerator;
+import cn.sincerity.webservice.document.resolver.generator.TypeGenerator;
 import com.alibaba.fastjson.JSON;
 import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * AbstractMethodParamResolver
+ * AbstractApiResolver
  *
  * @author Ht7_Sincerity
- * @date 2023/7/10
+ * @date 2023/7/21
  */
-public abstract class AbstractApiResolver implements ApiResolver, Ordered {
+public abstract class AbstractMethodResolver implements MethodResolver, Ordered {
 
-    private static final List<AbstractTypeGenerator> generators = new ArrayList<>();
+    private static final List<TypeGenerator> generators = new ArrayList<>();
 
-    public static final List<ApiEnum> API_ENUMS = new ArrayList<>();
-
-    public static void setGenerators(List<AbstractTypeGenerator> generators) {
-        AbstractApiResolver.generators.addAll(generators);
+    public static void setGenerators(List<TypeGenerator> generators) {
+        AbstractMethodResolver.generators.addAll(generators);
     }
 
     @Override
@@ -52,7 +52,7 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
         if (cache != null)
             return cache;
 
-        for (AbstractTypeGenerator generator : generators) {
+        for (TypeGenerator generator : generators) {
             if (generator.support(clazz))
                 return generator.generateDefaultValue(objectMeta);
         }
@@ -78,7 +78,7 @@ public abstract class AbstractApiResolver implements ApiResolver, Ordered {
     }
 
     public static void fillApiFields(FieldMeta fieldMeta, List<ApiField> apiFields) {
-        for (AbstractTypeGenerator generator : generators) {
+        for (TypeGenerator generator : generators) {
             if (generator.support(fieldMeta.getClazz())) {
                 generator.generateApiFields(fieldMeta, apiFields);
                 return;

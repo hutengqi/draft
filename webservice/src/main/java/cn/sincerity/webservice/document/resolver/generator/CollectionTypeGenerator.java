@@ -1,10 +1,10 @@
 package cn.sincerity.webservice.document.resolver.generator;
 
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.FieldType;
 import cn.sincerity.webservice.document.model.ObjectMeta;
-import cn.sincerity.webservice.document.resolver.AbstractApiResolver;
+import cn.sincerity.webservice.document.resolver.AbstractMethodResolver;
 import lombok.Data;
 
 import java.lang.reflect.ParameterizedType;
@@ -14,10 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * ListTypeValueGenerator
+ * CollectionTypeGenerator
  *
  * @author Ht7_Sincerity
- * @date 2023/7/17
+ * @date 2023/7/21
  */
 public class CollectionTypeGenerator extends AbstractTypeGenerator {
 
@@ -31,7 +31,7 @@ public class CollectionTypeGenerator extends AbstractTypeGenerator {
 
         CollectionArgType collectionArgType = CollectionArgType.from(objectMeta.getType());
         ObjectMeta argMeta = ObjectMeta.of(collectionArgType.getArgClz(), collectionArgType.getArgType());
-        Object element = AbstractApiResolver.getDefaultValue(argMeta);
+        Object element = AbstractMethodResolver.getDefaultValue(argMeta);
 
         if (List.class.isAssignableFrom(objectMeta.getClazz()))
             return Collections.singletonList(element);
@@ -50,7 +50,7 @@ public class CollectionTypeGenerator extends AbstractTypeGenerator {
         apiFields.add(listTypeField);
 
         FieldMeta argMeta = FieldMeta.of(collectionArgType.getArgClz(), collectionArgType.getArgType(), null, FieldType.ELEMENT);
-        AbstractApiResolver.fillApiFields(argMeta, apiFields);
+        AbstractMethodResolver.fillApiFields(argMeta, apiFields);
     }
 
     private String generateTypeName(Class<?> clz, Class<?> argClz) {

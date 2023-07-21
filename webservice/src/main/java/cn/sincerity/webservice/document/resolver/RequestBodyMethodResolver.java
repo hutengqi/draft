@@ -1,12 +1,11 @@
 package cn.sincerity.webservice.document.resolver;
 
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.FieldType;
 import cn.sincerity.webservice.document.model.ObjectMeta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.client.ml.EvaluateDataFrameRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.annotation.Annotation;
@@ -16,14 +15,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * RequestBodyMethodParamResolver
+ * RequestBodyMethodResolver: RequestBody 参数方式的 解析器
  *
  * @author Ht7_Sincerity
- * @date 2023/7/10
+ * @date 2023/7/21
  */
-public class RequestBodyApiResolver extends AbstractApiResolver {
+public class RequestBodyMethodResolver extends AbstractMethodResolver {
+
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -39,7 +38,7 @@ public class RequestBodyApiResolver extends AbstractApiResolver {
         try {
 
             ObjectMeta objectMeta = ObjectMeta.of(parameter.getType(), null);
-            Object o = AbstractApiResolver.getDefaultValue(objectMeta);
+            Object o = AbstractMethodResolver.getDefaultValue(objectMeta);
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(o);
@@ -61,7 +60,7 @@ public class RequestBodyApiResolver extends AbstractApiResolver {
         List<ApiField> list = new ArrayList<>();
 
         FieldMeta fieldMeta = FieldMeta.of(clz, type, null, FieldType.PARAM);
-        AbstractApiResolver.fillApiFields(fieldMeta, list);
+        AbstractMethodResolver.fillApiFields(fieldMeta, list);
 
         return list;
     }

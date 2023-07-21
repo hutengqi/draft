@@ -3,14 +3,14 @@ package cn.sincerity.webservice.document.annotation;
 import java.lang.annotation.*;
 
 /**
- * ApiRemark
+ * ApiProperty
  *
  * @author Ht7_Sincerity
- * @date 2023/7/11
+ * @date 2023/7/21
  */
-@Target({ElementType.TYPE, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
 @Inherited
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface ApiProperty {
 
     String remark() default "";
@@ -20,4 +20,6 @@ public @interface ApiProperty {
     String codeMethod() default "name";
 
     String descMethod() default "";
+
+    String defaultValue() default "";
 }

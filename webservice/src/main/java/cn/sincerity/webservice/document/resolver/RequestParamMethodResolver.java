@@ -1,6 +1,6 @@
 package cn.sincerity.webservice.document.resolver;
 
-import cn.sincerity.webservice.document.ApiField;
+import cn.sincerity.webservice.document.model.ApiField;
 import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.ApiParam;
 import org.springframework.util.ObjectUtils;
@@ -13,13 +13,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static cn.sincerity.webservice.document.ApiDocUtils.extractValue;
+
+
 /**
- * PathVariableMethodParamResolver
+ * RequestParamMethodResolver: RequestParam 参数方式的解析器
  *
  * @author Ht7_Sincerity
- * @date 2023/7/10
+ * @date 2023/7/21
  */
-public class RequestParamApiResolver extends AbstractApiResolver{
+public class RequestParamMethodResolver extends AbstractMethodResolver {
 
     @Override
     public boolean support(Annotation[][] parameterAnnotations) {
@@ -51,22 +54,21 @@ public class RequestParamApiResolver extends AbstractApiResolver{
         }
 
         List<ApiField> list = new ArrayList<>(parameters.length);
+
         for (Parameter parameter : parameters) {
             RequestParam requestParam = parameter.getAnnotation(RequestParam.class);
             if (requestParam == null) {
                 continue;
             }
-            String desc = null;
-            ApiParam apiParam = parameter.getAnnotation(ApiParam.class);
-            if (apiParam != null) {
-                desc = apiParam.value();
-            }
-            ApiField apiField = ApiField.builder()
-                    .name(requestParam.value())
-                    .desc(desc)
-                    .type(parameter.getType().getSimpleName())
-                    .require(requestParam.required())
-                    .build();
+
+            ApiField apiField = ApiField.of(
+                    requestParam.value(),
+                    extractValue(parameter, ApiParam::value),
+                    parameter.getType().getSimpleName(),
+                    requestParam.required(),
+                    ""
+            );
+
             list.add(apiField);
         }
 
@@ -82,4 +84,5 @@ public class RequestParamApiResolver extends AbstractApiResolver{
     public int getOrder() {
         return 1;
     }
+
 }

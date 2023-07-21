@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,9 @@ public class HelloController {
 
     @Resource
     private SftpTemplate sftpTemplate;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     @ApiOperation("hello")
     @GetMapping(value = "name")
@@ -53,6 +57,12 @@ public class HelloController {
     public void family(@RequestBody Family family) {
 
     }
+
+    @GetMapping("cache")
+    public void cache(@RequestParam("key") String key, @RequestParam("value") Long value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
 
     @GetMapping(value = "sftp")
     public ResponseEntity<String> sftp() {
