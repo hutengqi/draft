@@ -1,6 +1,6 @@
 package cn.sincerity.webservice.controller;
 
-import cn.sincerity.webservice.document.DocumentService;
+import cn.sincerity.webservice.document.DocumentCreator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +18,10 @@ import javax.annotation.Resource;
 public class DocController {
 
     @Resource
-    private DocumentService documentService;
+    private DocumentCreator documentCreator;
 
     @GetMapping
     public void generate() {
-        documentService.generate();
+        documentCreator.create();
     }
 }
