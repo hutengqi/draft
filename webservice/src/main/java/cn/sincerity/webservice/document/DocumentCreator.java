@@ -9,6 +9,7 @@ import cn.sincerity.webservice.document.resolver.AbstractMethodResolver;
 import cn.sincerity.webservice.document.resolver.MethodResolver;
 import cn.sincerity.webservice.document.resolver.generator.TypeGenerator;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +110,10 @@ public class DocumentCreator implements InitializingBean, ApplicationContextAwar
     private List<ApiMethod> apiMethods(Class<?> type, String typePath) {
         Method[] methods = type.getMethods();
         List<ApiMethod> apiMethods = new ArrayList<>(methods.length);
+        Object bean = applicationContext.getBean(type);
+        Class<?> targetClass = AopUtils.getTargetClass(bean);
         for (Method method : methods) {
-
+            method = AopUtils.getMostSpecificMethod(method, targetClass);
             ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
             if (apiOperation == null)
                 continue;
