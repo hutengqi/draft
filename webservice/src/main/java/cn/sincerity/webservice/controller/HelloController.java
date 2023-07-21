@@ -1,5 +1,6 @@
 package cn.sincerity.webservice.controller;
 
+import cn.sincerity.webservice.document.annotation.ApiDoc;
 import cn.sincerity.webservice.domian.CustomJsonObject;
 import cn.sincerity.webservice.domian.Family;
 import cn.sincerity.webservice.domian.Query;
@@ -24,6 +25,7 @@ import java.util.List;
 @Slf4j
 @Api
 @RestController
+@ApiDoc(group = "文档测试控制器")
 @RequestMapping("hello")
 public class HelloController {
 
