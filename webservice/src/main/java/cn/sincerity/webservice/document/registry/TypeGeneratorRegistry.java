@@ -44,7 +44,7 @@ public class TypeGeneratorRegistry implements BeanDefinitionRegistryPostProcesso
         TypeGeneratorScanner scanner = new TypeGeneratorScanner(context);
         Binder binder = Binder.get(applicationContext.getEnvironment());
         List<String> packages = binder.bind(PREFIX, CONTENT).orElseGet(ArrayList::new);
-        packages.add("com.hqins.insurance.flow.utils.document.resolver.generator");
+        packages.add("cn.sincerity.webservice.document.resolver");
         packages.forEach(reference -> {
             ApiDocUtils.findCandidateAndRegister(registry, scanner, reference);
         });

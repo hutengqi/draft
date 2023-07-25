@@ -6,6 +6,7 @@ import cn.sincerity.webservice.document.model.FieldMeta;
 import cn.sincerity.webservice.document.model.ObjectMeta;
 
 import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
 
 /**
@@ -43,6 +44,7 @@ public class BasicTypeGenerator extends AbstractTypeGenerator{
                 || CharSequence.class.isAssignableFrom(type)
                 || Number.class.isAssignableFrom(type)
                 || ChronoLocalDate.class.isAssignableFrom(type)
+                || ChronoLocalDateTime.class.isAssignableFrom(type)
                 || Boolean.class.isAssignableFrom(type);
     }
 }

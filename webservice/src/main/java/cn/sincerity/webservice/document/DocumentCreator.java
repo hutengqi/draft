@@ -13,6 +13,7 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -39,12 +40,14 @@ import java.util.stream.Collectors;
  * @date 2023/7/21
  */
 @Component
-public class DocumentCreator implements InitializingBean, ApplicationContextAware {
+public class DocumentCreator implements InitializingBean, ApplicationContextAware, BeanPostProcessor {
 
 
     private static final PathMatcher PATH_MATCHER = new AntPathMatcher();
 
-    public static final Set<ApiEnum> API_ENUMS = new HashSet<cn.sincerity.webservice.document.model.ApiEnum>();
+    private static final List<Class<?>> TYPES = new ArrayList<>();
+
+    public static final Set<ApiEnum> API_ENUMS = new HashSet<>();
 
     @Autowired
     private List<MethodResolver> resolvers;
@@ -62,14 +65,13 @@ public class DocumentCreator implements InitializingBean, ApplicationContextAwar
     }
 
     public synchronized List<ApiDocument> create() {
-        List<Class<?>> types = findTypeWithApiDoc();
-        if (types.isEmpty()) {
+        if (TYPES.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<ApiDocument> documents = new ArrayList<>(types.size());
+        List<ApiDocument> documents = new ArrayList<>(TYPES.size());
 
-        for (Class<?> type : types) {
+        for (Class<?> type : TYPES) {
             Controller controller = AnnotatedElementUtils.findMergedAnnotation(type, Controller.class);
             if (controller == null) {
                 continue;
@@ -97,23 +99,23 @@ public class DocumentCreator implements InitializingBean, ApplicationContextAwar
         return documents;
     }
 
-    private List<Class<?>> findTypeWithApiDoc() {
-        Map<String, Object> map = applicationContext.getBeansWithAnnotation(ApiDoc.class);
-        if (map.isEmpty()) {
-            return Collections.emptyList();
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        Class<?> clazz = bean.getClass();
+        ApiDoc apiDoc = AnnotationUtils.findAnnotation(clazz, ApiDoc.class);
+        if (apiDoc != null) {
+            TYPES.add(clazz);
         }
-        return map.values().stream()
-                .map(Object::getClass)
-                .collect(Collectors.toList());
+        return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }
 
     private List<ApiMethod> apiMethods(Class<?> type, String typePath) {
         Method[] methods = type.getMethods();
         List<ApiMethod> apiMethods = new ArrayList<>(methods.length);
-        Object bean = applicationContext.getBean(type);
-        Class<?> targetClass = AopUtils.getTargetClass(bean);
+//        Object bean = applicationContext.getBean(type);
+//        Class<?> targetClass = AopUtils.getTargetClass(bean);
         for (Method method : methods) {
-            method = AopUtils.getMostSpecificMethod(method, targetClass);
+//            method = AopUtils.getMostSpecificMethod(method, targetClass);
             ApiOperation apiOperation = AnnotationUtils.findAnnotation(method, ApiOperation.class);
             if (apiOperation == null)
                 continue;

@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier;
 @Configuration
 public class ApiResolverRegistry implements BeanDefinitionRegistryPostProcessor {
 
-    private static final String PACKAGE_REFERENCE = "com.hqins.insurance.flow.utils.document.resolver";
+    private static final String PACKAGE_REFERENCE = "cn.sincerity.webservice.document.resolver";
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
