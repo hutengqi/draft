@@ -2,7 +2,7 @@ spring:
   profiles:
     active: @profile.active@
   datasource:
-    url: jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/draft?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: hutengqi1228.?
     driver-class-name: com.mysql.cj.jdbc.Driver
