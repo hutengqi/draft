@@ -1,7 +1,6 @@
 server:
   port: 8788
 
-
 spring:
   shardingsphere:
     mode:
@@ -19,8 +18,8 @@ spring:
         minimum-idle: 10
         maximum-pool-size: 1000
         connection-test-query: select 1
-        idle-timeout: 60000
-        connection-timeout: 60000
+        idle-timeout: 0
+        connection-timeout: 0
       ds1:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,21 +29,76 @@ spring:
         minimum-idle: 10
         maximum-pool-size: 1000
         connection-test-query: select 1
-        idle-timeout: 60000
-        connection-timeout: 60000
+        idle-timeout: 0
+        connection-timeout: 0
     props:
       sql-show: true
     rules:
       sharding:
         tables:
           shoping:
-            actual-data-nodes: ds$->{0..1}.shoping_00
+            actual-data-nodes: ds$->{0..1}.shoping_0$->{0..1}
             database-strategy:
               standard:
                 sharding-column: shoping_id
                 sharding-algorithm-name: database-inline
+            table-strategy:
+              standard:
+                sharding-column: shoping_id
+                sharding-algorithm-name: shop-standard-sharding
+            key-generate-strategy:
+              column: shoping_id
+              key-generator-name: snowflake
+          t_order:
+            actual-data-nodes: ds$->{0..1}.t_order
+            database-strategy:
+              standard:
+                sharding-column: order_id
+                sharding-algorithm-name: key-int-mod
+            key-generate-strategy:
+              column: order_id
+              key-generator-name: snowflake
+          order_info:
+            actual-data-nodes: ds$->{0..1}.order_info
+            database-strategy:
+              standard:
+                sharding-column: order_id
+                sharding-algorithm-name: key-int-mod
+            key-generate-strategy:
+              column: order_info_id
+              key-generator-name: snowflake
+          user_info:
+            actual-data-nodes: ds$->{0..1}.user_info
+            key-generate-strategy:
+              column: user_id
+              key-generator-name: snowflake
         sharding-algorithms:
           database-inline:
-            type: INLINE
+            type: MOD
             props:
-              algorithm-expression: ds$->{shoping_id % 2}
+              sharding-count: 2
+          key-int-mod:
+            type: MOD
+            props:
+              sharding-count: 2
+          key-hash-mod:
+            type: HASH_MOD
+            props:
+              sharding-count: 2
+          shop-standard-sharding:
+            type: CLASS_BASED
+            props:
+              strategy: STANDARD
+              algorithmClassName: cn.sincerity.shardingsphere.config.ShopStandardShardingAlgorithm
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 123
+              max-vibration-offset: 15
+        # 配置表绑定关系
+        binding-tables:
+          - t_order,order_info
+        broadcast-tables:
+          - user_info
+

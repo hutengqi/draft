@@ -1,5 +1,6 @@
 package cn.sincerity.shardingsphere.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -19,6 +20,7 @@ public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @ApiModelProperty("用戶id")
     private Long userId;
 

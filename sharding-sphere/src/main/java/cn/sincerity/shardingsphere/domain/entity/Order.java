@@ -1,6 +1,9 @@
 package cn.sincerity.shardingsphere.domain.entity;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,11 +15,13 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Ht7_Sincerity
  * @since 2023-07-27
  */
+@TableName("t_order")
 @ApiModel(value = "Order对象", description = "")
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @ApiModelProperty("订单号")
     private Long orderId;
 

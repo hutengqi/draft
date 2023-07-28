@@ -1,13 +1,17 @@
 package cn.sincerity.shardingsphere.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+import java.util.Comparator;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Ht7_Sincerity
@@ -15,10 +19,11 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @TableName("shoping")
 @ApiModel(value = "Shoping对象", description = "")
-public class Shoping implements Serializable {
+public class Shoping implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @ApiModelProperty("商品id")
     private Long shopingId;
 
@@ -35,6 +40,7 @@ public class Shoping implements Serializable {
     public void setShopingId(Long shopingId) {
         this.shopingId = shopingId;
     }
+
     public String getShopingName() {
         return shopingName;
     }
@@ -42,6 +48,7 @@ public class Shoping implements Serializable {
     public void setShopingName(String shopingName) {
         this.shopingName = shopingName;
     }
+
     public Integer getShopingPrice() {
         return shopingPrice;
     }
@@ -53,9 +60,10 @@ public class Shoping implements Serializable {
     @Override
     public String toString() {
         return "Shoping{" +
-            "shopingId=" + shopingId +
-            ", shopingName=" + shopingName +
-            ", shopingPrice=" + shopingPrice +
-        "}";
+                "shopingId=" + shopingId +
+                ", shopingName=" + shopingName +
+                ", shopingPrice=" + shopingPrice +
+                "}";
     }
+
 }
