@@ -6,12 +6,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import sun.util.resources.LocaleData;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * CustomerJsonObject

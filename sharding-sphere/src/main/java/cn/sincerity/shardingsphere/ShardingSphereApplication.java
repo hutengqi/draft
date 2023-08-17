@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * SharingSphereApplication
+ * ShardingSphereApplication
  *
  * @author Ht7_Sincerity
  * @date 2023/7/27

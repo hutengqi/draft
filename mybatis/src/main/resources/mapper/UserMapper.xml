@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sincerity.mybatis.domain.dao.UserMapper">
+
+    <select id="getUserById" resultType="cn.sincerity.mybatis.domain.entity.User" parameterType="java.lang.Long">
+        SELECT id, userId, userName, userHead
+        FROM user
+        where id = #{id}
+    </select>
+</mapper>
