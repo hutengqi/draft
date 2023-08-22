@@ -3,12 +3,11 @@ package cn.sincerity;
 import cn.sincerity.exception.CustomException;
 import cn.sincerity.reflect.*;
 import cn.sincerity.type.Sub;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.beans.Transient;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -18,12 +17,32 @@ import java.util.*;
  * @date 2022/10/16
  */
 public class RunAnything {
+
     static Map<Integer, Integer> map = new HashMap<>();
 
-
     public static void main(String[] args)  {
+        // do anything.
     }
 
+
+    public static void switchCase(String insurePeriodFlag) {
+        String unit;
+        switch (insurePeriodFlag){
+            case "Y":
+                unit = "YEAR";
+                break;
+            case "M":
+                unit = "MONTH";
+                break;
+            case "D":
+                unit = "DAY";
+                break;
+            default:
+                unit = "AGE";
+                break;
+        }
+        System.out.println(unit);
+    }
 
     public static void change(Boolean flag) {
         flag = false;
@@ -37,7 +56,6 @@ public class RunAnything {
             sub.caller();
         }
     }
-
     public static void sum(String name, Integer... nums) {
         int sum = 0;
         for (Integer num : nums) {

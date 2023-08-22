@@ -19,7 +19,6 @@ public class TaskActivity extends BaseActivity {
 
     public static class Builder extends BaseActivity.Builder<Builder> {
 
-
         @Override
         public TaskActivity build() {
             return new TaskActivity(this.type, this.id, this.name, this.scene, this.material);
