@@ -6,6 +6,7 @@ import cn.sincerity.type.Sub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -18,16 +19,22 @@ import java.util.*;
  */
 public class RunAnything {
 
+
     static Map<Integer, Integer> map = new HashMap<>();
 
-    public static void main(String[] args)  {
+    static Logger logger = LoggerFactory.getLogger(RunAnything.class);
+
+    public static void main(String[] args) {
         // do anything.
+        logger.info("run anything.");
+        String name = RunAnything.class.getName();
+        System.out.println(name);
     }
 
 
     public static void switchCase(String insurePeriodFlag) {
         String unit;
-        switch (insurePeriodFlag){
+        switch (insurePeriodFlag) {
             case "Y":
                 unit = "YEAR";
                 break;
@@ -56,6 +63,7 @@ public class RunAnything {
             sub.caller();
         }
     }
+
     public static void sum(String name, Integer... nums) {
         int sum = 0;
         for (Integer num : nums) {
